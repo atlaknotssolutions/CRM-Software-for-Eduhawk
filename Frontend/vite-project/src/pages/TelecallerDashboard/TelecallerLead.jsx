@@ -1472,7 +1472,7 @@ export default function TelecallerLead() {
                         <TableCell>{getLeadTagBadge(lead.leadTag)}</TableCell>
 
                         <TableCell className="pr-8">
-                          <div className="flex gap-2 justify-center items-center">
+                          <div className="flex gap-2 justify-center items-center bg-white">
                             {isTelecaller ? (
                               <>
                                 <DropdownMenu>
@@ -1481,7 +1481,7 @@ export default function TelecallerLead() {
                                       Status
                                     </Button>
                                   </DropdownMenuTrigger>
-                                  <DropdownMenuContent>
+                                  <DropdownMenuContent className="bg-white">
                                     <DropdownMenuLabel>Update Status</DropdownMenuLabel>
                                     <DropdownMenuItem onClick={() => updateLeadStatus(lead._id || lead.id, "Interested")}>
                                       Interested
@@ -1510,7 +1510,7 @@ export default function TelecallerLead() {
                                       Tag
                                     </Button>
                                   </DropdownMenuTrigger>
-                                  <DropdownMenuContent>
+                                  <DropdownMenuContent className="bg-white">
                                     <DropdownMenuLabel>Update Lead Tag</DropdownMenuLabel>
                                     <DropdownMenuItem onClick={() => updateLeadTag(lead._id || lead.id, "Hot")}>
                                       Hot
