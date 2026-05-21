@@ -127,7 +127,11 @@ export const Sidebar = () => {
         { label: "Dashboard", href: "/dashboard", icon: Building2 },
         { label: "Employees", href: "/employees", icon: Users },
         { label: "My Profile", href: "/profile", icon: User },
-        { label: "leadbulkassignment", href: "/leadbulkassignment", icon: Calendar },
+        {
+          label: "leadbulkassignment",
+          href: "/leadbulkassignment",
+          icon: Calendar,
+        },
 
         { label: "Add Student", href: "/addstudent", icon: UserCheck },
         { label: "Departments", href: "/department", icon: Building2 },
@@ -136,10 +140,10 @@ export const Sidebar = () => {
         { label: "Employee Devices", href: "/device-management", icon: Laptop },
         { label: "Goals", href: "/goals", icon: Target },
         // { label: "Settings", href: "/settings", icon: Settings },
-
       ]
     : [
-        { label: "Dashboard", href: "/dashboard", icon: Building2 },
+        // { label: "Dashboard", href: "/dashboard", icon: Building2 },
+        { label: "Dashboard", href: "/telecaller-analytics", icon: Target },
         { label: "My Profile", href: "/profile", icon: User },
 
         { label: "Add Student", href: "/addstudent", icon: UserCheck },
@@ -151,7 +155,7 @@ export const Sidebar = () => {
           icon: UserCheck,
         },
 
-         { label: "Employee Devices", href: "/my-devices", icon: Laptop },
+        { label: "Employee Devices", href: "/my-devices", icon: Laptop },
         { label: "Goals", href: "/goals", icon: Target },
         // { label: "Settings", href: "/settings", icon: Settings },
       ];
@@ -218,7 +222,6 @@ export const Sidebar = () => {
       {/* Bottom Section */}
       <div className="border-t border-sidebar-border p-4 space-y-3">
         {/* Theme Toggle */}
-    
 
         {/* User Menu */}
         <DropdownMenu>

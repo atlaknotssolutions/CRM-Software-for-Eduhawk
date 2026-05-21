@@ -30,6 +30,7 @@ import EmployeeDevices from "./pages/EmployeeDevices";
 import Goals from "./pages/Goals";
 import HRDeviceManagement from "./pages/HRDeviceManagement";
 import LeadBulkAssignment from "./components/LeadBulkAssignment";
+import TelecallerAnalyticsDashboard from "./pages/TelecallerDashboard/TelecallerAnalyticsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -126,8 +127,7 @@ const AppRoutes = () => {
         }
       />
 
-
- <Route
+      <Route
         path="/leadbulkassignment"
         element={
           <ProtectedRoute>
@@ -198,8 +198,7 @@ const AppRoutes = () => {
         }
       />
 
-
-<Route
+      <Route
         path="/my-devices"
         element={
           <ProtectedRoute>
@@ -221,11 +220,18 @@ const AppRoutes = () => {
         path="/goals"
         element={
           <ProtectedRoute>
-            <Goals/>
+            <Goals />
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/telecaller-analytics"
+        element={
+          <ProtectedRoute>
+            <TelecallerAnalyticsDashboard />
+          </ProtectedRoute>
+        }
+      />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
