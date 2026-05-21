@@ -906,6 +906,10 @@ exports.updateLead = async (req, res) => {
       updateData.isVisibleToTelecaller = false;
     }
 
+    if (req.user?._id) {
+      updateData.lastUpdatedBy = req.user._id;
+    }
+
     if (role === "Telecaller") {
       // Telecaller may only update leads assigned to them
       const assignedTelecallerId = existingLead.assignedToTelecaller

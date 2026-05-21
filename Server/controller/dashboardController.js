@@ -626,11 +626,11 @@ exports.getDashboardData = async (req, res) => {
         telecallerName:
           lead.lastUpdatedBy?.role === "Telecaller"
             ? lead.lastUpdatedBy.name
-            : "-",
+            : lead.assignedToTelecaller?.name || "-",
         counsellorName:
           lead.lastUpdatedBy?.role === "Counsellor"
             ? lead.lastUpdatedBy.name
-            : "-",
+            : lead.assignedToCounsellor?.name || "-",
         status: lead.status,
         progress: lead.progress || "Initial Contact",
       });
