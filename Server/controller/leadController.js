@@ -846,6 +846,7 @@ exports.updateLead = async (req, res) => {
       "leadTag",
     ];
 
+    
     if (role === "Telecaller") {
       const invalidFields = Object.keys(updateData).filter(
         (field) => !telecallerAllowedFields.includes(field),
