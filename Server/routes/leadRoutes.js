@@ -34,7 +34,7 @@ router.post("/add", addLead);
 router.get(
   "/telecallers",
   // protect,
-  authorize(["Admin", "Counsellor", "Telecaller"]),
+  authorize(["Telecaller"]),
   getTelecallerLeads,
 );
 

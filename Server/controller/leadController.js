@@ -379,6 +379,7 @@ exports.addLead = async (req, res) => {
   }
 };
 
+// controllers/leadController.js
 exports.getLeadById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -388,30 +389,55 @@ exports.getLeadById = async (req, res) => {
       .populate("assignedToCounsellor", "name email");
 
     if (!lead) {
-      return res.status(404).json({
-        success: false,
-        message: "Lead not found",
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "Lead not found" });
     }
 
-    res.status(200).json({
-      success: true,
-      data: lead,
-    });
+    res.status(200).json({ success: true, data: lead });
   } catch (error) {
     console.error("Get Lead By ID Error:", error);
-    if (error.name === "CastError") {
-      return res.status(404).json({
-        success: false,
-        message: "Lead not found",
-      });
+    if (error.name === "CastError" || error.kind === "ObjectId") {
+      return res
+        .status(404)
+        .json({ success: false, message: "Lead not found" });
     }
-    res.status(500).json({
-      success: false,
-      message: "Error fetching lead",
-    });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
+// exports.getLeadById = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const lead = await Lead.findById(id)
+//       .populate("assignedToTelecaller", "name email")
+//       .populate("assignedToCounsellor", "name email");
+
+//     if (!lead) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Lead not found",
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       data: lead,
+//     });
+//   } catch (error) {
+//     console.error("Get Lead By ID Error:", error);
+//     if (error.name === "CastError") {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Lead not found",
+//       });
+//     }
+//     res.status(500).json({
+//       success: false,
+//       message: "Error fetching lead",
+//     });
+//   }
+// };
 
 exports.getCounsellorLeads = async (req, res) => {
   try {
@@ -475,15 +501,26 @@ exports.getTelecallerLeads = async (req, res) => {
   try {
     const { page = 1, limit = 50, search = "", leadTag, city } = req.query;
 
-    const filter = {};
+    // Ensure only authenticated telecaller can access
+    if (!req.user || req.user.role !== "Telecaller") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Only telecallers can view their leads.",
+      });
+    }
 
-    // Show non-converted leads OR converted leads that are still visible to telecaller
+    const filter = {
+      assignedToTelecaller: req.user._id, // ← MOST IMPORTANT CHANGE
+    };
+
+    // Optional: Show only non-converted OR converted leads that are still visible
+    // You can remove this if you want to hide converted leads completely
     filter.$or = [
       { status: { $ne: "Converted" } },
       { status: "Converted", isVisibleToTelecaller: true },
     ];
 
-    // Search
+    // Search functionality
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -496,6 +533,7 @@ exports.getTelecallerLeads = async (req, res) => {
     if (city) filter.city = { $regex: city, $options: "i" };
 
     const skip = (Number(page) - 1) * Number(limit);
+
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const todayEnd = new Date(todayStart);
@@ -507,10 +545,13 @@ exports.getTelecallerLeads = async (req, res) => {
         .skip(skip)
         .limit(Number(limit))
         .populate("assignedToTelecaller", "name email")
+        .populate("assignedToCounsellor", "name email") // optional
         .lean(),
 
       Lead.countDocuments(filter),
+
       Lead.countDocuments({
+        assignedToTelecaller: req.user._id,
         status: "Converted",
         updatedAt: { $gte: todayStart, $lt: todayEnd },
       }),
@@ -533,6 +574,68 @@ exports.getTelecallerLeads = async (req, res) => {
     });
   }
 };
+// exports.getTelecallerLeads = async (req, res) => {
+//   try {
+//     const { page = 1, limit = 50, search = "", leadTag, city } = req.query;
+
+//     const filter = {};
+
+//     // Show non-converted leads OR converted leads that are still visible to telecaller
+//     filter.$or = [
+//       { status: { $ne: "Converted" } },
+//       { status: "Converted", isVisibleToTelecaller: true },
+//     ];
+
+//     // Search
+//     if (search) {
+//       filter.$or = [
+//         { name: { $regex: search, $options: "i" } },
+//         { phone: { $regex: search, $options: "i" } },
+//         { email: { $regex: search, $options: "i" } },
+//       ];
+//     }
+
+//     if (leadTag) filter.leadTag = leadTag;
+//     if (city) filter.city = { $regex: city, $options: "i" };
+
+//     const skip = (Number(page) - 1) * Number(limit);
+//     const todayStart = new Date();
+//     todayStart.setHours(0, 0, 0, 0);
+//     const todayEnd = new Date(todayStart);
+//     todayEnd.setDate(todayEnd.getDate() + 1);
+
+//     const [leads, total, todayConverted] = await Promise.all([
+//       Lead.find(filter)
+//         .sort({ createdAt: -1 })
+//         .skip(skip)
+//         .limit(Number(limit))
+//         .populate("assignedToTelecaller", "name email")
+//         .lean(),
+
+//       Lead.countDocuments(filter),
+//       Lead.countDocuments({
+//         status: "Converted",
+//         updatedAt: { $gte: todayStart, $lt: todayEnd },
+//       }),
+//     ]);
+
+//     return res.status(200).json({
+//       success: true,
+//       total,
+//       page: Number(page),
+//       totalPages: Math.ceil(total / Number(limit)),
+//       todayConverted,
+//       data: leads,
+//     });
+//   } catch (error) {
+//     console.error("Get Telecaller Leads Error:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Error fetching leads.",
+//       error: error.message,
+//     });
+//   }
+// };
 
 exports.getAllLeads = async (req, res) => {
   try {
@@ -802,6 +905,42 @@ exports.updateLead = async (req, res) => {
     if (role === "Counsellor" && req.body.progress === "Completed") {
       updateData.isVisibleToTelecaller = false;
     }
+
+    if (role === "Telecaller") {
+      // Telecaller may only update leads assigned to them
+      const assignedTelecallerId = existingLead.assignedToTelecaller
+        ? String(
+            existingLead.assignedToTelecaller._id ||
+              existingLead.assignedToTelecaller,
+          )
+        : null;
+
+      if (
+        !assignedTelecallerId ||
+        assignedTelecallerId !== String(req.user._id)
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "Access denied. You can only update leads assigned to you.",
+        });
+      }
+    }
+
+    const updatedLead = await Lead.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
+      .populate("assignedToTelecaller", "name email")
+      .populate("assignedToCounsellor", "name email");
+
+    return res.status(200).json({
+      success: true,
+      data: updatedLead,
+    });
   } catch (error) {
     console.error("Update Lead Error:", error);
     return res.status(500).json({
@@ -811,7 +950,6 @@ exports.updateLead = async (req, res) => {
     });
   }
 };
-
 
 // ====================== Bulk Upload Leads WITHOUT Assignment ======================
 // exports.bulkUploadLeadsWithoutAssignment = async (req, res) => {
@@ -988,6 +1126,176 @@ exports.updateLead = async (req, res) => {
 //   }
 // };
 // ====================== Bulk Upload Leads WITHOUT Auto Assignment ======================
+// exports.bulkUploadLeadsWithoutAssignment = async (req, res) => {
+//   try {
+//     if (!req.file || !req.file.buffer) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "No file uploaded.",
+//       });
+//     }
+
+//     const extension = req.file.originalname.split(".").pop().toLowerCase();
+
+//     if (!["csv", "xlsx", "xls"].includes(extension)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Only CSV and Excel files are allowed.",
+//       });
+//     }
+
+//     const rows = parseWorkbook(req.file.buffer, extension);
+
+//     if (!rows || rows.length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "File is empty.",
+//       });
+//     }
+
+//     const forceImport =
+//       req.body?.forceImport === "true" || req.query?.forceImport === "true";
+
+//     // ====================== Normalize Leads ======================
+//     const normalizedLeads = rows.map((row) => {
+//       const normalized = {};
+//       Object.keys(row).forEach((key) => {
+//         const nk = normalizeKey(key);
+//         normalized[nk] = row[key];
+//       });
+
+//       const rawPhone = cleanString(normalized.phone || "");
+//       let cleanedPhone = rawPhone.replace(/\D/g, "");
+
+//       if (cleanedPhone.startsWith("91") && cleanedPhone.length > 10) {
+//         cleanedPhone = cleanedPhone.slice(2);
+//       }
+
+//       const budgetRaw = normalized.budget;
+//       const budgetNumber = budgetRaw
+//         ? Number(String(budgetRaw).replace(/,/g, "").trim())
+//         : undefined;
+
+//       return {
+//         name: cleanString(normalized.name),
+//         phone: cleanedPhone,
+//         parentName: cleanString(normalized.parentName || ""),
+//         city: cleanString(normalized.city || ""),
+//         email: cleanString(normalized.email || ""),
+//         neetStatus: cleanString(normalized.neetStatus || ""),
+//         budget: Number.isFinite(budgetNumber) ? budgetNumber : undefined,
+//         preferredCountry: cleanString(normalized.preferredCountry || ""),
+//         collegeName: cleanString(normalized.collegeName || ""),
+//         emergencyContact: cleanString(normalized.emergencyContact || ""),
+//         serviceManager: cleanString(normalized.serviceManager || ""),
+
+//         // === NO AUTO ASSIGNMENT ===
+//         status: "New",
+//         leadTag: "Warm",
+//         assignedToTelecaller: null,
+//         assignedAt: null,
+
+//         createdBy: req.user?._id,
+//         lastUpdatedBy: req.user?._id,
+//         updatedAt: new Date(),
+//       };
+//     });
+
+//     let finalLeadsToInsert = [];
+//     let duplicateFileRowsCount = 0;
+//     let duplicateExistingRowsCount = 0;
+//     let validatedCount = 0;
+
+//     if (!forceImport) {
+//       const validatedLeads = normalizedLeads.filter(
+//         (lead) => lead.name?.trim() && lead.phone?.length >= 10
+//       );
+
+//       validatedCount = validatedLeads.length;
+
+//       if (validatedCount === 0) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "No valid leads found. Name + 10 digit Phone is required.",
+//         });
+//       }
+
+//       // Remove duplicates in file
+//       const filePhoneSet = new Set();
+//       const uniqueFileLeads = [];
+
+//       validatedLeads.forEach((lead) => {
+//         if (filePhoneSet.has(lead.phone)) {
+//           duplicateFileRowsCount++;
+//           return;
+//         }
+//         filePhoneSet.add(lead.phone);
+//         uniqueFileLeads.push(lead);
+//       });
+
+//       // Check existing in DB
+//       const existingLeads = await Lead.find(
+//         { phone: { $in: Array.from(filePhoneSet) } },
+//         "phone"
+//       ).lean();
+
+//       const existingPhoneSet = new Set(existingLeads.map((l) => l.phone));
+
+//       finalLeadsToInsert = uniqueFileLeads.filter(
+//         (lead) => !existingPhoneSet.has(lead.phone)
+//       );
+
+//       duplicateExistingRowsCount =
+//         uniqueFileLeads.length - finalLeadsToInsert.length;
+//     } else {
+//       finalLeadsToInsert = normalizedLeads;
+//       validatedCount = normalizedLeads.length;
+//     }
+
+//     if (finalLeadsToInsert.length === 0 && !forceImport) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "All leads are duplicates or invalid.",
+//       });
+//     }
+
+//     // ====================== Insert ======================
+//     let inserted = [];
+//     try {
+//       inserted = await Lead.insertMany(finalLeadsToInsert, { ordered: false });
+//     } catch (bulkError) {
+//       console.error("Bulk insert error:", bulkError);
+//       if (bulkError.insertedDocs) inserted = bulkError.insertedDocs;
+//     }
+
+//     const importedCount = Array.isArray(inserted) ? inserted.length : 0;
+//     const leadIds = Array.isArray(inserted)
+//       ? inserted.map((lead) => lead?._id?.toString()).filter(Boolean)
+//       : [];
+
+//     return res.status(201).json({
+//       success: true,
+//       message: `Successfully imported ${importedCount} leads without auto assignment.`,
+//       totalRows: rows.length,
+//       validLeads: validatedCount,
+//       imported: importedCount,
+//       leadIds,
+//       duplicateFileRows: duplicateFileRowsCount,
+//       duplicateExistingRows: duplicateExistingRowsCount,
+//       skipped: rows.length - importedCount,
+//       note: "Leads uploaded successfully. Use Manual Assignment to assign Telecallers.",
+//     });
+//   } catch (error) {
+//     console.error("Bulk Upload Error:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error during bulk upload.",
+//       error: error.message,
+//     });
+//   }
+// };
+
+// ====================== Bulk Upload Leads WITHOUT Auto Assignment ======================
 exports.bulkUploadLeadsWithoutAssignment = async (req, res) => {
   try {
     if (!req.file || !req.file.buffer) {
@@ -1014,9 +1322,6 @@ exports.bulkUploadLeadsWithoutAssignment = async (req, res) => {
         message: "File is empty.",
       });
     }
-
-    const forceImport =
-      req.body?.forceImport === "true" || req.query?.forceImport === "true";
 
     // ====================== Normalize Leads ======================
     const normalizedLeads = rows.map((row) => {
@@ -1051,7 +1356,7 @@ exports.bulkUploadLeadsWithoutAssignment = async (req, res) => {
         emergencyContact: cleanString(normalized.emergencyContact || ""),
         serviceManager: cleanString(normalized.serviceManager || ""),
 
-        // === NO AUTO ASSIGNMENT ===
+        // === IMPORTANT: NO AUTO ASSIGNMENT ===
         status: "New",
         leadTag: "Warm",
         assignedToTelecaller: null,
@@ -1063,65 +1368,55 @@ exports.bulkUploadLeadsWithoutAssignment = async (req, res) => {
       };
     });
 
-    let finalLeadsToInsert = [];
-    let duplicateFileRowsCount = 0;
-    let duplicateExistingRowsCount = 0;
-    let validatedCount = 0;
+    // ====================== Validation & Duplicate Check ======================
+    const validatedLeads = normalizedLeads.filter(
+      (lead) => lead.name?.trim() && lead.phone?.length >= 10,
+    );
 
-    if (!forceImport) {
-      const validatedLeads = normalizedLeads.filter(
-        (lead) => lead.name?.trim() && lead.phone?.length >= 10
-      );
-
-      validatedCount = validatedLeads.length;
-
-      if (validatedCount === 0) {
-        return res.status(400).json({
-          success: false,
-          message: "No valid leads found. Name + 10 digit Phone is required.",
-        });
-      }
-
-      // Remove duplicates in file
-      const filePhoneSet = new Set();
-      const uniqueFileLeads = [];
-
-      validatedLeads.forEach((lead) => {
-        if (filePhoneSet.has(lead.phone)) {
-          duplicateFileRowsCount++;
-          return;
-        }
-        filePhoneSet.add(lead.phone);
-        uniqueFileLeads.push(lead);
+    if (validatedLeads.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No valid leads found. Name + 10 digit Phone is required.",
       });
-
-      // Check existing in DB
-      const existingLeads = await Lead.find(
-        { phone: { $in: Array.from(filePhoneSet) } },
-        "phone"
-      ).lean();
-
-      const existingPhoneSet = new Set(existingLeads.map((l) => l.phone));
-
-      finalLeadsToInsert = uniqueFileLeads.filter(
-        (lead) => !existingPhoneSet.has(lead.phone)
-      );
-
-      duplicateExistingRowsCount =
-        uniqueFileLeads.length - finalLeadsToInsert.length;
-    } else {
-      finalLeadsToInsert = normalizedLeads;
-      validatedCount = normalizedLeads.length;
     }
 
-    if (finalLeadsToInsert.length === 0 && !forceImport) {
+    // Remove duplicates within the file
+    const filePhoneSet = new Set();
+    const uniqueFileLeads = [];
+    let duplicateFileRowsCount = 0;
+
+    validatedLeads.forEach((lead) => {
+      if (filePhoneSet.has(lead.phone)) {
+        duplicateFileRowsCount++;
+        return;
+      }
+      filePhoneSet.add(lead.phone);
+      uniqueFileLeads.push(lead);
+    });
+
+    // Check existing leads in DB
+    const existingLeads = await Lead.find(
+      { phone: { $in: Array.from(filePhoneSet) } },
+      "phone",
+    ).lean();
+
+    const existingPhoneSet = new Set(existingLeads.map((l) => l.phone));
+
+    const finalLeadsToInsert = uniqueFileLeads.filter(
+      (lead) => !existingPhoneSet.has(lead.phone),
+    );
+
+    const duplicateExistingRowsCount =
+      uniqueFileLeads.length - finalLeadsToInsert.length;
+
+    if (finalLeadsToInsert.length === 0) {
       return res.status(400).json({
         success: false,
         message: "All leads are duplicates or invalid.",
       });
     }
 
-    // ====================== Insert ======================
+    // ====================== Insert into Database ======================
     let inserted = [];
     try {
       inserted = await Lead.insertMany(finalLeadsToInsert, { ordered: false });
@@ -1137,15 +1432,15 @@ exports.bulkUploadLeadsWithoutAssignment = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: `Successfully imported ${importedCount} leads without auto assignment.`,
+      message: `Successfully imported ${importedCount} leads (Unassigned).`,
       totalRows: rows.length,
-      validLeads: validatedCount,
+      validLeads: validatedLeads.length,
       imported: importedCount,
       leadIds,
       duplicateFileRows: duplicateFileRowsCount,
       duplicateExistingRows: duplicateExistingRowsCount,
       skipped: rows.length - importedCount,
-      note: "Leads uploaded successfully. Use Manual Assignment to assign Telecallers.",
+      note: "Leads are ready for manual assignment to telecallers.",
     });
   } catch (error) {
     console.error("Bulk Upload Error:", error);
