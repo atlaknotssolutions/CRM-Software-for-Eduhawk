@@ -74,6 +74,23 @@ const cleanString = (value) => {
   return String(value).trim();
 };
 
+const cleanPhoneNumber = (phone) => {
+  if (phone === null || phone === undefined) return "";
+  let cleaned = String(phone).replace(/\D/g, "");
+  if (cleaned.startsWith("91") && cleaned.length > 10) {
+    cleaned = cleaned.slice(cleaned.length - 10);
+  }
+  return cleaned;
+};
+
+const parseBudget = (budget) => {
+  if (budget === null || budget === undefined) return undefined;
+  const budgetText = String(budget).replace(/,/g, "").trim();
+  if (!budgetText) return undefined;
+  const budgetNumber = Number(budgetText);
+  return Number.isFinite(budgetNumber) ? budgetNumber : undefined;
+};
+
 const parseWorkbook = (buffer, extension) => {
   const workbook =
     extension === "csv"
@@ -328,49 +345,66 @@ exports.addLead = async (req, res) => {
       emergencyContact,
       status,
       leadTag,
+      serviceManager,
     } = req.body;
 
-    if (!name || !phone) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Name and Phone are required." });
+    // Validation
+    const trimmedName = cleanString(name);
+    const cleanedPhone = cleanPhoneNumber(phone);
+
+    if (!trimmedName || !cleanedPhone) {
+      return res.status(400).json({
+        success: false,
+        message: "Name and Phone are required.",
+      });
     }
 
-    let cleanedPhone = String(phone).replace(/\D/g, "");
-    if (cleanedPhone.startsWith("91") && cleanedPhone.length > 10) {
-      cleanedPhone = cleanedPhone.slice(2);
+    if (cleanedPhone.length !== 10) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid phone number. Must be 10 digits.",
+      });
     }
 
-    if (cleanedPhone.length < 10) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid phone number." });
+    const existingLead = await Lead.findOne({ phone: cleanedPhone }).lean();
+    if (existingLead) {
+      return res.status(409).json({
+        success: false,
+        message: "A lead with this phone number already exists.",
+      });
     }
 
     const lead = await Lead.create({
-      name: String(name).trim(),
+      name: trimmedName,
       phone: cleanedPhone,
-      parentName,
-      city,
-      email,
-      neetStatus,
-      budget: budget ? Number(String(budget).replace(/,/g, "")) : undefined,
-      preferredCountry,
-      collegeName,
-      emergencyContact,
+      parentName: cleanString(parentName) || undefined,
+      city: cleanString(city) || undefined,
+      email: email ? String(email).trim().toLowerCase() : undefined,
+      neetStatus: cleanString(neetStatus) || undefined,
+      budget: parseBudget(budget),
+      preferredCountry: cleanString(preferredCountry) || undefined,
+      collegeName: cleanString(collegeName) || undefined,
+      emergencyContact: cleanString(emergencyContact) || undefined,
+      serviceManager: cleanString(serviceManager) || undefined,
       status: status || "New",
       leadTag: leadTag || "Warm",
     });
 
-    return res
-      .status(201)
-      .json({ success: true, message: "Lead added successfully.", data: lead });
+    return res.status(201).json({
+      success: true,
+      message: "Lead added successfully.",
+      data: lead,
+    });
   } catch (error) {
+    console.error("Add Lead Error:", error);
+
     if (error.code === 11000) {
-      return res
-        .status(409)
-        .json({ success: false, message: "Phone number already exists." });
+      return res.status(409).json({
+        success: false,
+        message: "Phone number already exists.",
+      });
     }
+
     return res.status(500).json({
       success: false,
       message: "Error adding lead.",
@@ -846,7 +880,6 @@ exports.updateLead = async (req, res) => {
       "leadTag",
     ];
 
-    
     if (role === "Telecaller") {
       const invalidFields = Object.keys(updateData).filter(
         (field) => !telecallerAllowedFields.includes(field),
