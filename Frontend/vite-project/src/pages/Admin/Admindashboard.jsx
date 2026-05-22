@@ -70,7 +70,7 @@
 // } from "lucide-react";
 // import { toast } from "react-toastify";
 
-// const BASE_URL = "http://localhost:8000/api";
+// const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
 
 // // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -2066,7 +2066,6 @@
 
 // export default AdminDashboard;
 
-
 import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "../../components/ui/button";
 import {
@@ -2139,7 +2138,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -2426,107 +2425,113 @@ const LeadForm = ({
       */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-  {/* Status */}
-  <div>
-    <Label className="text-xs text-muted-foreground mb-1 block">Status</Label>
-    <Select value={form.status} onValueChange={(v) => set("status", v)}>
-      <SelectTrigger className="h-9 text-sm">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {STATUS_OPTIONS.map((s) => (
-          <SelectItem key={s} value={s}>
-            {s}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
+        {/* Status */}
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">
+            Status
+          </Label>
+          <Select value={form.status} onValueChange={(v) => set("status", v)}>
+            <SelectTrigger className="h-9 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-  {/* Lead Tag */}
-  <div>
-    <Label className="text-xs text-muted-foreground mb-1 block">Lead tag</Label>
-    <Select value={form.leadTag} onValueChange={(v) => set("leadTag", v)}>
-      <SelectTrigger className="h-9 text-sm">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {LEAD_TAG_OPTIONS.map((t) => (
-          <SelectItem key={t} value={t}>
-            {t}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
+        {/* Lead Tag */}
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">
+            Lead tag
+          </Label>
+          <Select value={form.leadTag} onValueChange={(v) => set("leadTag", v)}>
+            <SelectTrigger className="h-9 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {LEAD_TAG_OPTIONS.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-  {/* Assign Telecaller - Ab Counsellor jaisa */}
-  <div>
-    <Label className="text-xs text-muted-foreground mb-1 block">
-      Assign telecaller
-    </Label>
-    <Select
-      value={form.assignedToTelecaller || "none"}
-      onValueChange={(v) =>
-        set("assignedToTelecaller", v === "none" ? "" : v)
-      }
-    >
-      <SelectTrigger className="h-9 text-sm">   {/* bg-white hataya */}
-        <SelectValue placeholder="Select telecaller" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="none">None</SelectItem>
-        {employees
-          .filter((e) => e.role?.toLowerCase() === "telecaller")
-          .map((e) => (
-            <SelectItem key={e._id} value={String(e._id)}>
-              {e.name}
-            </SelectItem>
-          ))}
-      </SelectContent>
-    </Select>
-  </div>
+        {/* Assign Telecaller - Ab Counsellor jaisa */}
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">
+            Assign telecaller
+          </Label>
+          <Select
+            value={form.assignedToTelecaller || "none"}
+            onValueChange={(v) =>
+              set("assignedToTelecaller", v === "none" ? "" : v)
+            }
+          >
+            <SelectTrigger className="h-9 text-sm">
+              {" "}
+              {/* bg-white hataya */}
+              <SelectValue placeholder="Select telecaller" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">None</SelectItem>
+              {employees
+                .filter((e) => e.role?.toLowerCase() === "telecaller")
+                .map((e) => (
+                  <SelectItem key={e._id} value={String(e._id)}>
+                    {e.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-  {/* Assign Counsellor */}
-  <div>
-    <Label className="text-xs text-muted-foreground mb-1 block">
-      Assign counsellor
-    </Label>
-    <Select
-      value={form.assignedToCounsellor || "none"}
-      onValueChange={(v) =>
-        set("assignedToCounsellor", v === "none" ? "" : v)
-      }
-    >
-      <SelectTrigger className="h-9 text-sm">
-        <SelectValue placeholder="Select counsellor" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="none">None</SelectItem>
-        {employees
-          .filter((e) => e.role?.toLowerCase() === "counsellor")
-          .map((e) => (
-            <SelectItem key={e._id} value={String(e._id)}>
-              {e.name}
-            </SelectItem>
-          ))}
-      </SelectContent>
-    </Select>
-  </div>
+        {/* Assign Counsellor */}
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">
+            Assign counsellor
+          </Label>
+          <Select
+            value={form.assignedToCounsellor || "none"}
+            onValueChange={(v) =>
+              set("assignedToCounsellor", v === "none" ? "" : v)
+            }
+          >
+            <SelectTrigger className="h-9 text-sm">
+              <SelectValue placeholder="Select counsellor" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">None</SelectItem>
+              {employees
+                .filter((e) => e.role?.toLowerCase() === "counsellor")
+                .map((e) => (
+                  <SelectItem key={e._id} value={String(e._id)}>
+                    {e.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-  {/* Follow-up Date */}
-  <div>
-    <Label className="text-xs text-muted-foreground mb-1 block">
-      Follow-up date
-    </Label>
-    <Input
-      type="date"
-      value={form.followUpDate ? form.followUpDate.split("T")[0] : ""}
-      onChange={(e) => set("followUpDate", e.target.value)}
-      className="h-9 text-sm"
-    />
-  </div>
-</div>
+        {/* Follow-up Date */}
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">
+            Follow-up date
+          </Label>
+          <Input
+            type="date"
+            value={form.followUpDate ? form.followUpDate.split("T")[0] : ""}
+            onChange={(e) => set("followUpDate", e.target.value)}
+            className="h-9 text-sm"
+          />
+        </div>
+      </div>
 
       <div className="flex justify-end gap-3 pt-2">
         <Button variant="outline" onClick={onCancel}>
@@ -3755,7 +3760,7 @@ const AdminDashboard = () => {
           ))}
         </div>
       </div>
-{/* 
+      {/* 
       <Card>
         <CardHeader>
           <CardTitle>Team login & session details</CardTitle>
@@ -4138,7 +4143,9 @@ const AdminDashboard = () => {
                   <SelectItem value="none">None</SelectItem>
                   {employees
                     .filter((e) =>
-                      ["Telecaller", "telecaller"].includes(e.role || e.position),
+                      ["Telecaller", "telecaller"].includes(
+                        e.role || e.position,
+                      ),
                     )
                     .map((e) => {
                       const employeeId = e._id || e.id;
@@ -4166,7 +4173,9 @@ const AdminDashboard = () => {
                   <SelectItem value="none">None</SelectItem>
                   {employees
                     .filter((e) =>
-                      ["Counsellor", "counsellor"].includes(e.role || e.position),
+                      ["Counsellor", "counsellor"].includes(
+                        e.role || e.position,
+                      ),
                     )
                     .map((e) => {
                       const employeeId = e._id || e.id;

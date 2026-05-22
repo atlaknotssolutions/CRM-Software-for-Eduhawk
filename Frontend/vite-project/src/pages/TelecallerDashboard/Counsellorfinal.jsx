@@ -454,7 +454,7 @@ import {
   X,
 } from "lucide-react";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
 
 const Counsellorfinal = () => {
   const [activeTab, setActiveTab] = useState("interested");

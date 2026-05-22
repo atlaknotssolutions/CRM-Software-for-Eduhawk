@@ -41,7 +41,7 @@
 // import { ToastContainer, toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
 
-// const BASE_URL = "http://localhost:8000/api";
+// const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
 // const ITEMS_PER_PAGE = 20;
 
 // // Follow-up Modal
@@ -838,7 +838,6 @@
 //   );
 // }
 
-
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -882,7 +881,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
 const ITEMS_PER_PAGE = 20;
 
 // ==================== FollowUp Modal ====================
@@ -895,7 +894,7 @@ const FollowUpModal = ({ isOpen, onClose, onSubmit, lead }) => {
     if (lead) {
       setRemark(lead.lastRemark || "");
       setNextFollowUpDate(
-        lead.followUpDate ? lead.followUpDate.split("T")[0] : ""
+        lead.followUpDate ? lead.followUpDate.split("T")[0] : "",
       );
     }
   }, [lead]);
@@ -1082,7 +1081,7 @@ export default function TelecallerLead() {
   const totalPages = Math.ceil(filteredLeads.length / ITEMS_PER_PAGE);
   const paginatedLeads = filteredLeads.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   useEffect(() => {
@@ -1099,8 +1098,8 @@ export default function TelecallerLead() {
   const updateLocalLead = (id, updates) => {
     setLeads((prev) =>
       prev.map((lead) =>
-        (lead._id || lead.id) === id ? { ...lead, ...updates } : lead
-      )
+        (lead._id || lead.id) === id ? { ...lead, ...updates } : lead,
+      ),
     );
   };
 
@@ -1122,7 +1121,7 @@ export default function TelecallerLead() {
             ...authHeader.headers,
           },
           body: JSON.stringify(payload),
-        }
+        },
       );
 
       if (!res.ok) throw new Error("Failed to save follow-up");
@@ -1221,9 +1220,13 @@ export default function TelecallerLead() {
   const getStatusBadge = (status) => {
     switch (status) {
       case "Converted":
-        return <Badge className="bg-emerald-100 text-emerald-700">Converted</Badge>;
+        return (
+          <Badge className="bg-emerald-100 text-emerald-700">Converted</Badge>
+        );
       case "Not Interested":
-        return <Badge className="bg-red-100 text-red-700">Not Interested</Badge>;
+        return (
+          <Badge className="bg-red-100 text-red-700">Not Interested</Badge>
+        );
       case "Call Back":
         return <Badge className="bg-amber-100 text-amber-700">Call Back</Badge>;
       case "Interested":
@@ -1256,14 +1259,21 @@ export default function TelecallerLead() {
               T
             </div>
             <div>
-              <h1 className="text-3xl font-semibold text-slate-900">Telecaller Leads</h1>
-              <p className="text-sm text-slate-500">Real-time Lead Management</p>
+              <h1 className="text-3xl font-semibold text-slate-900">
+                Telecaller Leads
+              </h1>
+              <p className="text-sm text-slate-500">
+                Real-time Lead Management
+              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="relative w-96">
-              <Search className="absolute left-4 top-3.5 text-slate-400" size={20} />
+              <Search
+                className="absolute left-4 top-3.5 text-slate-400"
+                size={20}
+              />
               <Input
                 placeholder="Search by name, phone or city..."
                 value={searchTerm}
@@ -1291,9 +1301,20 @@ export default function TelecallerLead() {
               <SelectContent>
                 <SelectItem value="all">All Countries</SelectItem>
                 {[
-                  "Russia", "Georgia", "Nepal", "Bangladesh", "Kyrgyzstan",
-                  "Uzbekistan", "Kazakhstan", "Tajikistan", "Iran", "Egypt",
-                  "Belarus", "China", "Vietnam", "Argentina",
+                  "Russia",
+                  "Georgia",
+                  "Nepal",
+                  "Bangladesh",
+                  "Kyrgyzstan",
+                  "Uzbekistan",
+                  "Kazakhstan",
+                  "Tajikistan",
+                  "Iran",
+                  "Egypt",
+                  "Belarus",
+                  "China",
+                  "Vietnam",
+                  "Argentina",
                 ].map((c) => (
                   <SelectItem key={c} value={c}>
                     {c}
@@ -1327,7 +1348,12 @@ export default function TelecallerLead() {
               </div>
               <div>
                 <p className="text-3xl font-semibold">
-                  ₹{(leads.reduce((sum, l) => sum + (Number(l.budget) || 0), 0) / 100000).toFixed(1)}L
+                  ₹
+                  {(
+                    leads.reduce((sum, l) => sum + (Number(l.budget) || 0), 0) /
+                    100000
+                  ).toFixed(1)}
+                  L
                 </p>
                 <p className="text-sm text-slate-500">Total Budget</p>
               </div>
@@ -1341,7 +1367,11 @@ export default function TelecallerLead() {
               </div>
               <div>
                 <p className="text-3xl font-semibold">
-                  {leads.filter((l) => ["Yes", "Appeared"].includes(l.neetStatus || l.neet)).length}
+                  {
+                    leads.filter((l) =>
+                      ["Yes", "Appeared"].includes(l.neetStatus || l.neet),
+                    ).length
+                  }
                 </p>
                 <p className="text-sm text-slate-500">Qualified</p>
               </div>
@@ -1369,7 +1399,11 @@ export default function TelecallerLead() {
               Showing {paginatedLeads.length} of {filteredLeads.length} leads
             </p>
           </div>
-          <Button onClick={exportCSV} variant="outline" className="flex items-center gap-2">
+          <Button
+            onClick={exportCSV}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
             <Download size={18} /> Export CSV
           </Button>
         </div>
@@ -1380,17 +1414,26 @@ export default function TelecallerLead() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="pl-8 w-16">S.No</TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("name")}>
+                  <TableHead
+                    className="cursor-pointer"
+                    onClick={() => handleSort("name")}
+                  >
                     Name <ArrowUpDown size={14} className="inline ml-1" />
                   </TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Parent</TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("city")}>
+                  <TableHead
+                    className="cursor-pointer"
+                    onClick={() => handleSort("city")}
+                  >
                     City <ArrowUpDown size={14} className="inline ml-1" />
                   </TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>NEET Status</TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort("budget")}>
+                  <TableHead
+                    className="cursor-pointer"
+                    onClick={() => handleSort("budget")}
+                  >
                     Budget <ArrowUpDown size={14} className="inline ml-1" />
                   </TableHead>
                   <TableHead>Country</TableHead>
@@ -1412,35 +1455,59 @@ export default function TelecallerLead() {
                   </TableRow>
                 ) : paginatedLeads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={15} className="text-center py-20 text-slate-400">
+                    <TableCell
+                      colSpan={15}
+                      className="text-center py-20 text-slate-400"
+                    >
                       No leads found
                     </TableCell>
                   </TableRow>
                 ) : (
                   paginatedLeads.map((lead, index) => {
-                    const serialNo = (currentPage - 1) * ITEMS_PER_PAGE + index + 1;
+                    const serialNo =
+                      (currentPage - 1) * ITEMS_PER_PAGE + index + 1;
                     return (
-                      <TableRow key={lead._id || lead.id} className="hover:bg-slate-50">
-                        <TableCell className="pl-8 font-medium text-slate-500">{serialNo}</TableCell>
-                        <TableCell className="font-medium">{lead.name}</TableCell>
-                        <TableCell className="font-mono">{lead.phone}</TableCell>
+                      <TableRow
+                        key={lead._id || lead.id}
+                        className="hover:bg-slate-50"
+                      >
+                        <TableCell className="pl-8 font-medium text-slate-500">
+                          {serialNo}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {lead.name}
+                        </TableCell>
+                        <TableCell className="font-mono">
+                          {lead.phone}
+                        </TableCell>
                         <TableCell>{lead.parentName || "—"}</TableCell>
                         <TableCell>{lead.city || "—"}</TableCell>
-                        <TableCell className="text-sm text-slate-600">{lead.email || "—"}</TableCell>
+                        <TableCell className="text-sm text-slate-600">
+                          {lead.email || "—"}
+                        </TableCell>
                         <TableCell>
                           <Badge>{lead.neetStatus || lead.neet || "—"}</Badge>
                         </TableCell>
                         <TableCell className="font-semibold">
-                          {lead.budget ? `₹${Number(lead.budget).toLocaleString("en-IN")}` : "—"}
+                          {lead.budget
+                            ? `₹${Number(lead.budget).toLocaleString("en-IN")}`
+                            : "—"}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">{lead.preferredCountry || "—"}</Badge>
+                          <Badge variant="outline">
+                            {lead.preferredCountry || "—"}
+                          </Badge>
                         </TableCell>
 
                         <TableCell>
                           {lead.followUpDate ? (
-                            <Badge variant="outline" className="text-amber-600 font-medium">
-                              {new Date(lead.followUpDate).toLocaleDateString("en-IN")}
+                            <Badge
+                              variant="outline"
+                              className="text-amber-600 font-medium"
+                            >
+                              {new Date(lead.followUpDate).toLocaleDateString(
+                                "en-IN",
+                              )}
                             </Badge>
                           ) : (
                             <span className="text-slate-400 text-sm">—</span>
@@ -1458,7 +1525,9 @@ export default function TelecallerLead() {
                               <MessageSquare size={18} />
                             </Button>
                           ) : (
-                            <span className="text-slate-500 text-xs">Restricted</span>
+                            <span className="text-slate-500 text-xs">
+                              Restricted
+                            </span>
                           )}
                         </TableCell>
 
@@ -1477,26 +1546,56 @@ export default function TelecallerLead() {
                               <>
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" disabled={actionLoading}>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      disabled={actionLoading}
+                                    >
                                       Status
                                     </Button>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent className="bg-white">
-                                    <DropdownMenuLabel>Update Status</DropdownMenuLabel>
-                                    <DropdownMenuItem onClick={() => updateLeadStatus(lead._id || lead.id, "Interested")}>
+                                    <DropdownMenuLabel>
+                                      Update Status
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        updateLeadStatus(
+                                          lead._id || lead.id,
+                                          "Interested",
+                                        )
+                                      }
+                                    >
                                       Interested
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => updateLeadStatus(lead._id || lead.id, "Call Back")}>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        updateLeadStatus(
+                                          lead._id || lead.id,
+                                          "Call Back",
+                                        )
+                                      }
+                                    >
                                       Call Back
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                      onClick={() => updateLeadStatus(lead._id || lead.id, "Not Interested")}
+                                      onClick={() =>
+                                        updateLeadStatus(
+                                          lead._id || lead.id,
+                                          "Not Interested",
+                                        )
+                                      }
                                       className="text-red-600"
                                     >
                                       Not Interested
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                      onClick={() => updateLeadStatus(lead._id || lead.id, "Converted")}
+                                      onClick={() =>
+                                        updateLeadStatus(
+                                          lead._id || lead.id,
+                                          "Converted",
+                                        )
+                                      }
                                       className="text-emerald-600"
                                     >
                                       Converted
@@ -1506,26 +1605,55 @@ export default function TelecallerLead() {
 
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" disabled={actionLoading}>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      disabled={actionLoading}
+                                    >
                                       Tag
                                     </Button>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent className="bg-white">
-                                    <DropdownMenuLabel>Update Lead Tag</DropdownMenuLabel>
-                                    <DropdownMenuItem onClick={() => updateLeadTag(lead._id || lead.id, "Hot")}>
+                                    <DropdownMenuLabel>
+                                      Update Lead Tag
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        updateLeadTag(
+                                          lead._id || lead.id,
+                                          "Hot",
+                                        )
+                                      }
+                                    >
                                       Hot
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => updateLeadTag(lead._id || lead.id, "Warm")}>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        updateLeadTag(
+                                          lead._id || lead.id,
+                                          "Warm",
+                                        )
+                                      }
+                                    >
                                       Warm
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => updateLeadTag(lead._id || lead.id, "Cold")}>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        updateLeadTag(
+                                          lead._id || lead.id,
+                                          "Cold",
+                                        )
+                                      }
+                                    >
                                       Cold
                                     </DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </>
                             ) : (
-                              <span className="text-slate-500 text-xs">Restricted</span>
+                              <span className="text-slate-500 text-xs">
+                                Restricted
+                              </span>
                             )}
 
                             <Button

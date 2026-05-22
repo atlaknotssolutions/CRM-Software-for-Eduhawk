@@ -334,7 +334,7 @@ import {
 import { Users, UserCheck, Clock, Edit2, Phone, Save } from "lucide-react";
 import { toast } from "react-toastify";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
 
 const CounselorDashboard = () => {
   const [activeTab, setActiveTab] = useState("interested");

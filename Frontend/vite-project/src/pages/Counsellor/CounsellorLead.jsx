@@ -55,7 +55,7 @@
 // } from "lucide-react";
 // import { toast } from "react-toastify";
 
-// const BASE_URL = "http://localhost:8000/api";
+// const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
 
 // const LEAD_TYPES = {
 //   Hot: { label: "🔥 Hot", variant: "destructive" },
@@ -785,7 +785,6 @@
 
 // export default CounsellorLead;
 
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../../components/ui/button";
@@ -836,7 +835,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
 
 const LEAD_TYPES = {
   Hot: { label: "🔥 Hot", variant: "destructive" },
@@ -898,7 +897,7 @@ const calculateProgress = (student) => {
 // Automatic Progress Stage
 const getAutomaticProgressStage = (progressData) => {
   const completed = PROGRESS_FIELDS.filter(
-    (field) => progressData[field] === true
+    (field) => progressData[field] === true,
   ).length;
 
   if (completed === 0) return "Initial Contact";

@@ -41,7 +41,7 @@ export const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [deptName, setDeptName] = useState("");
 
-  const API_BASE = "http://localhost:8000";
+  const API_BASE = "https://crm-software-for-eduhawk-1.onrender.com";
   const token = localStorage.getItem("authToken");
 
   // Fetch department name if it's just an ID

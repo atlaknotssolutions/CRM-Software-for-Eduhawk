@@ -66,7 +66,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
 
 const STATUS_OPTIONS = [
   "New",
@@ -292,7 +292,7 @@ const AddStudent = () => {
         type: "success",
         text: `✅ Imported ${res.data.imported || 0} leads! Ready for manual assignment.`,
       });
-      
+
       const uploadResult = {
         totalRows: res.data.totalRows,
         validLeads: res.data.validLeads,

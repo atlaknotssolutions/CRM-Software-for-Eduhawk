@@ -41,7 +41,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
 
 export default function TelecallerDashboard() {
   const [leads, setLeads] = useState([]);
@@ -329,7 +329,6 @@ export default function TelecallerDashboard() {
                 <Users className="h-8 w-8 text-blue-600" />
               </div>
               <div>
-                
                 <p className="text-3xl font-semibold text-slate-900">
                   {totalLeads}
                 </p>
