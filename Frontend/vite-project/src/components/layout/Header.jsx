@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { List, Target } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -108,34 +109,43 @@ export const Header = () => {
     navigate("/auth");
   };
 
+
   const navigationItems = isHR
     ? [
         { label: "Dashboard", href: "/dashboard", icon: Building2 },
         { label: "Employees", href: "/employees", icon: Users },
-        { label: "Departments", href: "/departments", icon: Building2 },
-        { label: "Attendance", href: "/attendance", icon: UserCheck },
-        { label: "Salary", href: "/salary", icon: DollarSign },
-        { label: "Leave Requests", href: "/leave-requests", icon: Calendar },
-        { label: "Recruitment", href: "/recruitment", icon: Briefcase },
+        { label: "My Profile", href: "/profile", icon: User },
         {
-          label: "Device Management",
-          href: "/device-management",
-          icon: Laptop,
+          label: "leadbulkassignment",
+          href: "/leadbulkassignment",
+          icon: Calendar,
         },
-        { label: "Calendar", href: "/calendar", icon: Calendar },
-        { label: "Goals", href: "/goals", icon: Briefcase },
-        { label: "Settings ", href: "/settings", icon: Settings },
+
+        { label: "Add Student", href: "/addstudent", icon: UserCheck },
+        { label: "Departments", href: "/department", icon: Building2 },
+        { label: "Lead Management", href: "/lead-management", icon: List },
+        { label: "Final", href: "/admindashboard", icon: UserCheck },
+        { label: "Employee Devices", href: "/device-management", icon: Laptop },
+        { label: "Goals", href: "/goals", icon: Target },
+        // { label: "Settings", href: "/settings", icon: Settings },
       ]
     : [
-        { label: "Dashboard", href: "/dashboard", icon: Building2 },
+        // { label: "Dashboard", href: "/dashboard", icon: Building2 },
+        { label: "Dashboard", href: "/telecaller-analytics", icon: Target },
         { label: "My Profile", href: "/profile", icon: User },
-        { label: "Attendance", href: "/attendance", icon: UserCheck },
-        { label: "My Salary", href: "/salary", icon: DollarSign },
-        { label: "Leave Requests", href: "/leave-requests", icon: Calendar },
-        { label: "Calendar", href: "/calendar", icon: Calendar },
-        { label: "My Devices", href: "/my-devices", icon: Laptop },
-        { label: "Goals", href: "/goals", icon: Briefcase },
-        { label: "Settings ", href: "/settings", icon: Settings },
+
+        { label: "Add Student", href: "/addstudent", icon: UserCheck },
+        { label: "Telecaller Lead", href: "/tellcullerlead", icon: UserCheck },
+        { label: "Counselor Dashboard", href: "/counsuller", icon: UserCheck },
+        {
+          label: "Counselor Lead",
+          href: "/counsellorlead",
+          icon: UserCheck,
+        },
+
+        { label: "Employee Devices", href: "/my-devices", icon: Laptop },
+        { label: "Goals", href: "/goals", icon: Target },
+        // { label: "Settings", href: "/settings", icon: Settings },
       ];
 
   return (
@@ -162,14 +172,14 @@ export const Header = () => {
 
           {/* User & Menu */}
           <div className="flex items-center space-x-4">
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               onClick={toggleTheme}
               title={`Current theme: ${theme}`}
             >
               <ThemeIcon className="w-5 h-5" />
-            </Button>
+            </Button> */}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
