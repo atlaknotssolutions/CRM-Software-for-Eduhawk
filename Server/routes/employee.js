@@ -5,15 +5,14 @@
 //     createEmployee,
 //     updateEmployee,
 //     editEmployee,
-//     deleteEmployee 
+//     deleteEmployee
 // } from "../controllers/employeeController.js";
 // import authorize from "../middlewares/authorize.js";
 // import upload from "../config/multer.js";
 // import uploadProfile from "../config/multerProfile.js";
 // import { resumeUpload, profileUpload } from "../controllers/employeeController.js";
 
-
-// const router = express.Router(); 
+// const router = express.Router();
 
 // router.get("/", authorize(["hr"]), getAllEmployees);
 // router.get("/:id", authorize(["employee", "hr"]), getEmployeeById);
@@ -35,14 +34,14 @@
 //     editEmployee,
 //     deleteEmployee,
 //     resumeUpload,
-//     profileUpload 
+//     profileUpload
 // } from "../controllers/employeeController.js";
 
 // import authorize from "../middlewares/authorize.js";
 // import upload from "../config/multer.js";
 // import uploadProfile from "../config/multerProfile.js";
 
-// const router = express.Router(); 
+// const router = express.Router();
 
 // // Get all employees - Only HR
 // router.get("/", authorize(["hr"]), getAllEmployees);
@@ -66,9 +65,9 @@
 // router.put("/upload-resume/:id", upload.single("resume"), resumeUpload);
 
 // // Upload Profile Picture - Employee or HR
-// router.put("/upload-profile/:id", 
-//     authorize(["employee", "hr"]), 
-//     uploadProfile.single("profile"), 
+// router.put("/upload-profile/:id",
+//     authorize(["employee", "hr"]),
+//     uploadProfile.single("profile"),
 //     profileUpload
 // );
 
@@ -88,51 +87,63 @@ const {
   getCounsellors,
 } = require("../controller/employeeController.js");
 
-const authorize = require ("../middlewares/authorize.js");
-const upload = require( "../config/multer.js");
-const uploadProfile = require( "../config/multerProfile.js");
+const authorize = require("../middlewares/authorize.js");
+const upload = require("../config/multer.js");
+const uploadProfile = require("../config/multerProfile.js");
 
 const router = express.Router();
 
 // ====================== Employee CRUD Routes ======================
 
-// Get all employees → Only HR
-router.get("/", authorize(['Admin']), getAllEmployees);
+// Get all employees → Admin and Counsellor
+router.get("/", authorize(["Admin", "Counsellor"]), getAllEmployees);
 
 // Get single employee → Employee (himself) or HR
-router.get("/:id",authorize(['Admin', 'Counsellor', 'Telecaller']), getEmployeeById);
+router.get(
+  "/:id",
+  authorize(["Admin", "Counsellor", "Telecaller"]),
+  getEmployeeById,
+);
 
 // Create new employee → Only HR
-router.post("/create", authorize(['Admin']), createEmployee);
+router.post("/create", authorize(["Admin"]), createEmployee);
 
 // Full update employee → Employee or HR
-router.put("/update/:id", authorize(['Admin', 'Counsellor', 'Telecaller']), updateEmployee);
+router.put(
+  "/update/:id",
+  authorize(["Admin", "Counsellor", "Telecaller"]),
+  updateEmployee,
+);
 
 // Partial edit employee → Employee or HR
-router.put("/edit/:id", authorize(['Admin', 'Counsellor', 'Telecaller']), editEmployee);
+router.put(
+  "/edit/:id",
+  authorize(["Admin", "Counsellor", "Telecaller"]),
+  editEmployee,
+);
 
 // Delete employee → Only HR
-router.delete("/delete/:id", authorize(['Admin']), deleteEmployee);
+router.delete("/delete/:id", authorize(["Admin"]), deleteEmployee);
 
 // ====================== File Upload Routes ======================
 
 // Upload Resume → Secured (Recommended)
 router.put(
   "/upload-resume/:id",
- authorize(['Admin', 'Counsellor', 'Telecaller']),          // ← Added security
+  authorize(["Admin", "Counsellor", "Telecaller"]), // ← Added security
   upload.single("resume"),
-  resumeUpload
+  resumeUpload,
 );
 
 // Upload Profile Picture → Secured
 router.put(
   "/upload-profile/:id",
-  authorize(['Admin', 'Counsellor', 'Telecaller']),
+  authorize(["Admin", "Counsellor", "Telecaller"]),
   uploadProfile.single("profile"),
-  profileUpload
+  profileUpload,
 );
 
-router.get("/telecallers", authorize(['Admin']), getTelecallers);
-router.get("/counsellors", authorize(['Admin']), getCounsellors);
+router.get("/telecallers", authorize(["Admin", "Counsellor"]), getTelecallers);
+router.get("/counsellors", authorize(["Admin", "Counsellor"]), getCounsellors);
 
 module.exports = router;
