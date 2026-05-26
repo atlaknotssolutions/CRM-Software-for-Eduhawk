@@ -219,6 +219,7 @@ const formatDateTime = (date) => {
   const value = new Date(date);
   if (Number.isNaN(value.getTime())) return "N/A";
   return value.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -461,6 +462,12 @@ exports.getDashboardData = async (req, res) => {
 
     const today = new Date();
 
+    // Define today's bounds for exact-day queries
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
     // ==================== LEAD STATISTICS ====================
     const [
       totalLeads,
@@ -586,6 +593,26 @@ exports.getDashboardData = async (req, res) => {
       student: lead.name,
       country: lead.preferredCountry || "Not set",
       date: formatDateTime(lead.followUpDate),
+    }));
+
+    // ==================== TODAY'S FOLLOW-UP REMINDERS ====================
+    const followUpsTodayDocs = await Lead.find({
+      ...matchFilter,
+      followUpDate: { $gte: todayStart, $lt: todayEnd },
+    })
+      .sort({ followUpDate: 1 })
+      .lean();
+
+    const followUpsTodayList = followUpsTodayDocs.map((lead) => ({
+      id: lead._id,
+      student: lead.name,
+      country: lead.preferredCountry || "Not set",
+      date: formatDateTime(lead.followUpDate),
+      time: new Date(lead.followUpDate).toLocaleTimeString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     }));
 
     // ==================== ACTIVITY CALENDAR HISTORY ====================
@@ -744,6 +771,7 @@ exports.getDashboardData = async (req, res) => {
 
         recentActivities,
         upcomingFollowUps,
+        followUpsToday: followUpsTodayList,
         activityCalendar,
         leadSourceData,
         statusData,

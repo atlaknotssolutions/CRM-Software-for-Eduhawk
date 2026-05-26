@@ -70,7 +70,7 @@
 // } from "lucide-react";
 // import { toast } from "react-toastify";
 
-// const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
+// const BASE_URL = "http://localhost:8000/api";
 
 // // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -2138,7 +2138,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
+const BASE_URL = "http://localhost:8000/api";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 

@@ -34,14 +34,18 @@ import {
 // import logo from "../../assets/download.jpg";
 
 export const Sidebar = () => {
-  const { user, logout, isHR } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const location = useLocation();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [deptName, setDeptName] = useState("");
 
-  const API_BASE = "https://crm-software-for-eduhawk-1.onrender.com";
+  const isAdmin = user?.role === "Admin";
+  const isTelecaller = user?.role === "Telecaller";
+  const isCounsellor = user?.role === "Counsellor";
+
+  const API_BASE = "http://localhost:8000";
   const token = localStorage.getItem("authToken");
 
   // Fetch department name if it's just an ID
@@ -122,43 +126,60 @@ export const Sidebar = () => {
     logout();
   };
 
-  const navigationItems = isHR
+  const navigationItems = isAdmin
     ? [
         { label: "Dashboard", href: "/dashboard", icon: Building2 },
         { label: "Employees", href: "/employees", icon: Users },
         { label: "My Profile", href: "/profile", icon: User },
+        { label: "Add Student", href: "/addstudent", icon: UserCheck },
+        { label: "Departments", href: "/department", icon: Building2 },
         {
-          label: "leadbulkassignment",
+          label: "Assign Students",
           href: "/leadbulkassignment",
           icon: Calendar,
         },
-
-        { label: "Add Student", href: "/addstudent", icon: UserCheck },
-        { label: "Departments", href: "/department", icon: Building2 },
         { label: "Lead Management", href: "/lead-management", icon: List },
-        { label: "Final", href: "/admindashboard", icon: UserCheck },
+        { label: "Lead Dashboard", href: "/admindashboard", icon: UserCheck },
         { label: "Employee Devices", href: "/device-management", icon: Laptop },
         { label: "Goals", href: "/goals", icon: Target },
-        // { label: "Settings", href: "/settings", icon: Settings },
       ]
-    : [
-        // { label: "Dashboard", href: "/dashboard", icon: Building2 },
-        { label: "Dashboard", href: "/telecaller-analytics", icon: Target },
-        { label: "My Profile", href: "/profile", icon: User },
-
-        // { label: "Add Student", href: "/addstudent", icon: UserCheck },
-        { label: "Telecaller Lead", href: "/tellcullerlead", icon: UserCheck },
-        { label: "Counselor Dashboard", href: "/counsuller", icon: UserCheck },
-        {
-          label: "Counselor Lead",
-          href: "/counsellorlead",
-          icon: UserCheck,
-        },
-
-        { label: "Employee Devices", href: "/my-devices", icon: Laptop },
-        { label: "Goals", href: "/goals", icon: Target },
-        // { label: "Settings", href: "/settings", icon: Settings },
-      ];
+    : isTelecaller
+      ? [
+          { label: "Dashboard", href: "/telecaller-analytics", icon: Target },
+          { label: "My Profile", href: "/profile", icon: User },
+          { label: "Add Student", href: "/addstudent", icon: UserCheck },
+          {
+            label: "Telecaller Lead",
+            href: "/tellcullerlead",
+            icon: UserCheck,
+          },
+          { label: "Employee Devices", href: "/my-devices", icon: Laptop },
+          { label: "Goals", href: "/goals", icon: Target },
+        ]
+      : isCounsellor
+        ? [
+            { label: "Dashboard", href: "/dashboard", icon: UserCheck },
+            { label: "My Profile", href: "/profile", icon: User },
+            { label: "Add Student", href: "/addstudent", icon: UserCheck },
+            {
+              label: "Assign Students",
+              href: "/leadbulkassignment",
+              icon: Calendar,
+            },
+            // {
+            //   label: "Counselor Dashboard",
+            //   href: "/counsuller",
+            //   icon: UserCheck,
+            // },
+            {
+              label: "Counselor Lead",
+              href: "/counsellorlead",
+              icon: UserCheck,
+            },
+            { label: "Employee Devices", href: "/my-devices", icon: Laptop },
+            { label: "Goals", href: "/goals", icon: Target },
+          ]
+        : [{ label: "Goals", href: "/goals", icon: Target }];
 
   const isActiveLink = (href: string) => location.pathname === href;
 
@@ -265,10 +286,10 @@ export const Sidebar = () => {
                 {deptName || "No Department"}
               </Badge>
               <Badge
-                variant={isHR ? "default" : "outline"}
+                variant={isAdmin ? "default" : "outline"}
                 className="ml-2 text-xs"
               >
-                {isHR ? "HR" : "Employee"}
+                {user?.role || "Employee"}
               </Badge>
             </div>
 

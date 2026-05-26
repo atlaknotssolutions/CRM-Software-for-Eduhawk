@@ -31,6 +31,7 @@ import Goals from "./pages/Goals";
 import HRDeviceManagement from "./pages/HRDeviceManagement";
 import LeadBulkAssignment from "./components/LeadBulkAssignment";
 import TelecallerAnalyticsDashboard from "./pages/TelecallerDashboard/TelecallerAnalyticsDashboard";
+import FollowUps from "./pages/FollowUps";
 
 const queryClient = new QueryClient();
 
@@ -229,6 +230,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <TelecallerAnalyticsDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/follow-ups"
+        element={
+          <ProtectedRoute>
+            <FollowUps />
           </ProtectedRoute>
         }
       />

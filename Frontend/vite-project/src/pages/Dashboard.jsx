@@ -63,6 +63,7 @@ const Dashboard = () => {
 
   const [recentActivities, setRecentActivities] = useState([]);
   const [upcomingFollowUps, setUpcomingFollowUps] = useState([]);
+  const [followUpsToday, setFollowUpsToday] = useState([]);
   const [leadSourceData, setLeadSourceData] = useState([]);
   const [statusData, setStatusData] = useState([]);
   const [monthlyConversionData, setMonthlyConversionData] = useState([]);
@@ -98,6 +99,7 @@ const Dashboard = () => {
 
         setRecentActivities(data.recentActivities || []);
         setUpcomingFollowUps(data.upcomingFollowUps || []);
+        setFollowUpsToday(data.followUpsToday || []);
         setLeadSourceData(data.leadSourceData || []);
         setStatusData(data.statusData || []);
         setMonthlyConversionData(data.monthlyConversionData || []);
@@ -195,14 +197,13 @@ const Dashboard = () => {
               Welcome back, {user?.name || "Team Member"}
             </h1>
 
- 
             <p className="text-blue-100">
               Here's your EDU-HAWK CRM overview for today.
             </p>
           </div>
           <div className="hidden md:block text-right">
-             <h5 className="text-3xl font-bold mb-2">
-               {user?.role || "Team Member"}
+            <h5 className="text-3xl font-bold mb-2">
+              {user?.role || "Team Member"}
             </h5>
             <div className="text-2xl font-bold">
               {new Date().toLocaleDateString("en-IN")}
@@ -563,6 +564,40 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Today's Follow-up Reminders (visible to telecallers/counsellors) */}
+      {followUpsToday.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              Today's Follow-up Reminders
+            </CardTitle>
+            <CardDescription>
+              Leads scheduled for follow-up today
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {followUpsToday.map((f) => (
+                <div
+                  key={f.id}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
+                  <div>
+                    <p className="font-medium">{f.student}</p>
+                    <p className="text-sm text-muted-foreground">{f.country}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold">{f.time}</p>
+                    <p className="text-sm text-muted-foreground">{f.date}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Actions */}
       <Card>

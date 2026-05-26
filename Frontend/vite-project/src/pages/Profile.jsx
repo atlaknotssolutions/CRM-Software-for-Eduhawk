@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import axios from 'axios';
+import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -38,28 +38,28 @@ import {
 import { toast } from "react-toastify";
 
 const Profile = () => {
-
   const wrapperStyle = {
     paddingBottom: "20px",
-    marginTop: "20px"
+    marginTop: "20px",
   };
 
-  const statCardsContainerStyle = {    
+  const statCardsContainerStyle = {
     alignItems: "stretch",
   };
 
   const marginStyle = {
-    marginBottom: "10px"
+    marginBottom: "10px",
   };
 
   const buttonStyle = {
-    width: "200px"
-  }; 
+    width: "200px",
+  };
 
   const { user, updateProfile } = useAuth();
   const API_BASE = import.meta.env.VITE_API_URL;
-  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
-  const [deptName, setDeptName] = useState('');
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  const [deptName, setDeptName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const getDepartmentName = (dept) => {
     if (!dept) return "";
@@ -100,14 +100,44 @@ const Profile = () => {
 
   const [profileImage, setProfileImage] = useState(null);
   const resumeInputRef = useRef(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleProfileUpdate = async () => {
+    // Client-side validation
+    const validateProfile = () => {
+      if (!profileData.name || !profileData.name.trim()) {
+        toast.error("Please enter your full name");
+        return false;
+      }
+      if (!profileData.email || !/^\S+@\S+\.\S+$/.test(profileData.email)) {
+        toast.error("Please enter a valid email address");
+        return false;
+      }
+      if (
+        profileData.phone &&
+        !/^[0-9()+\-\s]{7,20}$/.test(profileData.phone)
+      ) {
+        toast.error("Please enter a valid phone number");
+        return false;
+      }
+      return true;
+    };
+
+    if (!validateProfile()) return;
+
+    setIsSaving(true);
     try {
       await updateProfile(profileData);
       setIsEditing(false);
       toast.success("Profile updated successfully!");
     } catch (error) {
-      toast.error("Failed to update profile");
+      console.error("Profile update failed:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to update profile. Please try again.",
+      );
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -127,7 +157,7 @@ const Profile = () => {
       await changePassword(
         passwordData.currentPassword,
         passwordData.newPassword,
-        passwordData.confirmPassword
+        passwordData.confirmPassword,
       );
       setPasswordData({
         currentPassword: "",
@@ -206,35 +236,37 @@ const Profile = () => {
     const dep = user?.department;
     if (!dep) return;
     // If already an object with name, use it
-    if (typeof dep === 'object' && dep.name) {
+    if (typeof dep === "object" && dep.name) {
       setDeptName(dep.name);
       return;
     }
     // If it's a string that's not an ObjectId, assume it's already a name
-    if (typeof dep === 'string' && !/^[0-9a-fA-F]{24}$/.test(dep)) {
+    if (typeof dep === "string" && !/^[0-9a-fA-F]{24}$/.test(dep)) {
       setDeptName(dep);
       return;
     }
-    if (typeof dep === 'string') {
+    if (typeof dep === "string") {
       (async () => {
         try {
           const res = await axios.get(`${API_BASE}/api/departments/${dep}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (!mounted) return;
-          const name = res.data?.data?.name || '';
+          const name = res.data?.data?.name || "";
           setDeptName(name);
         } catch (err) {
-          console.error('Failed to fetch department name', err);
+          console.error("Failed to fetch department name", err);
         }
       })();
     }
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [user]);
 
   // Keep profileData.department in sync with resolved deptName
   useEffect(() => {
-    if (deptName) setProfileData(prev => ({ ...prev, department: deptName }));
+    if (deptName) setProfileData((prev) => ({ ...prev, department: deptName }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deptName]);
 
@@ -254,18 +286,21 @@ const Profile = () => {
 
     // Upload to backend
     try {
-      toast.info('Uploading profile image...');
-      const uploaded = await uploadProfileImage(file, currentUser?.id || currentUser?._id);
+      toast.info("Uploading profile image...");
+      const uploaded = await uploadProfileImage(
+        file,
+        currentUser?.id || currentUser?._id,
+      );
       // If backend returned mapped user data with avatar, use that (persisted URL)
       if (uploaded && uploaded.avatar) {
         setProfileImage(uploaded.avatar);
-        toast.success('Profile picture uploaded');
+        toast.success("Profile picture uploaded");
       } else {
-        toast.success('Profile picture updated (preview only)');
+        toast.success("Profile picture updated (preview only)");
       }
     } catch (err) {
-      console.error('Failed to upload profile image', err);
-      toast.error('Failed to upload profile image');
+      console.error("Failed to upload profile image", err);
+      toast.error("Failed to upload profile image");
     }
   };
 
@@ -273,7 +308,10 @@ const Profile = () => {
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="space-y-6">
         {/* Header */}
-        <div style={marginStyle} className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+        <div
+          style={marginStyle}
+          className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0"
+        >
           <div>
             <h1 className="text-3xl font-bold text-foreground">My Profile</h1>
             <p className="text-muted-foreground">
@@ -336,7 +374,8 @@ const Profile = () => {
               <div className="flex-1">
                 <h2 className="text-2xl font-bold">{user?.name}</h2>
                 <p className="text-muted-foreground">
-                  {user?.position} • {deptName || getDepartmentName(user?.department)}
+                  {user?.position} •{" "}
+                  {deptName || getDepartmentName(user?.department)}
                 </p>
                 <div className="flex items-center space-x-2 mt-2">
                   <Badge variant="secondary">
@@ -364,7 +403,6 @@ const Profile = () => {
             <TabsTrigger value="security" className="cursor-pointer">
               Security
             </TabsTrigger>
-          
           </TabsList>
 
           {/* Personal Information */}
@@ -506,11 +544,12 @@ const Profile = () => {
                   />
                 </div>
 
-            
-
                 <Separator />
 
-                <div style={marginStyle} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div
+                  style={marginStyle}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
                   <div className="space-y-2">
                     <Label htmlFor="emergencyContact">Emergency Contact</Label>
                     <Input
@@ -546,19 +585,20 @@ const Profile = () => {
                 {isEditing && (
                   <div className="flex justify-end space-x-4">
                     <Button
-                    style={buttonStyle}
+                      style={buttonStyle}
                       variant="outline"
                       onClick={() => setIsEditing(false)}
-                    > 
+                    >
                       Cancel
                     </Button>
                     <Button
                       style={buttonStyle}
                       onClick={handleProfileUpdate}
                       className="btn-gradient"
+                      disabled={isSaving}
                     >
                       <Save className="w-4 h-4 mr-2" />
-                      Save Changes
+                      {isSaving ? "Saving..." : "Save Changes"}
                     </Button>
                   </div>
                 )}
@@ -625,8 +665,6 @@ const Profile = () => {
               </CardContent>
             </Card>
           </TabsContent>
-
-      
         </Tabs>
       </div>
     </div>

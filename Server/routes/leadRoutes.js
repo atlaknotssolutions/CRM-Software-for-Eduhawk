@@ -23,12 +23,12 @@ const diskUpload = require("../middlewares/multer");
 // router.post("/bulk-upload", leadUpload.single("file"), bulkUploadLeads);
 router.post(
   "/bulk-upload-unassigned",
-  leadUpload.single("file"),
+  leadUpload.single("file"),authorize(["Telecaller", "Admin", "Counsellor"]),
   bulkUploadLeadsWithoutAssignment,
 );
-router.post("/assign-manual", assignLeadsManually);
-router.get("/", getAllLeads);
-router.post("/add", addLead);
+router.post("/assign-manual",authorize(["Telecaller", "Admin", "Counsellor"]), assignLeadsManually);
+router.get("/",authorize(["Telecaller", "Admin", "Counsellor"]), getAllLeads);
+router.post("/add",authorize(["Telecaller", "Admin", "Counsellor"]), addLead);
 
 // Specific routes before parameterized
 router.get(
@@ -46,12 +46,12 @@ router.get(
   getCounsellorLeads,
 );
 
-router.get("/:id", getLeadById);
+router.get("/:id",authorize(["Telecaller", "Admin", "Counsellor"]), getLeadById);
 router.put(
   "/:id",
   authorize(["Admin", "Counsellor", "Telecaller"]),
   updateLead,
 );
-router.delete("/:id", deleteLead);
+router.delete("/:id",authorize(["Admin", "Counsellor"]), deleteLead);
 
 module.exports = router;

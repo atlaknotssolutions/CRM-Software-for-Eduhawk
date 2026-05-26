@@ -35,10 +35,14 @@ import {
 import logo from "../../assets/download.jpg";
 
 export const Header = () => {
-  const { user, logout, isHR } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isAdmin = user?.role === "Admin";
+  const isTelecaller = user?.role === "Telecaller";
+  const isCounsellor = user?.role === "Counsellor";
 
   const getDepartmentName = (dept) => {
     if (!dept) return "";
@@ -109,8 +113,7 @@ export const Header = () => {
     navigate("/auth");
   };
 
-
-  const navigationItems = isHR
+  const navigationItems = isAdmin
     ? [
         { label: "Dashboard", href: "/dashboard", icon: Building2 },
         { label: "Employees", href: "/employees", icon: Users },
@@ -120,33 +123,50 @@ export const Header = () => {
           href: "/leadbulkassignment",
           icon: Calendar,
         },
-
         { label: "Add Student", href: "/addstudent", icon: UserCheck },
         { label: "Departments", href: "/department", icon: Building2 },
         { label: "Lead Management", href: "/lead-management", icon: List },
         { label: "Final", href: "/admindashboard", icon: UserCheck },
         { label: "Employee Devices", href: "/device-management", icon: Laptop },
         { label: "Goals", href: "/goals", icon: Target },
-        // { label: "Settings", href: "/settings", icon: Settings },
       ]
-    : [
-        // { label: "Dashboard", href: "/dashboard", icon: Building2 },
-        { label: "Dashboard", href: "/telecaller-analytics", icon: Target },
-        { label: "My Profile", href: "/profile", icon: User },
-
-        { label: "Add Student", href: "/addstudent", icon: UserCheck },
-        { label: "Telecaller Lead", href: "/tellcullerlead", icon: UserCheck },
-        { label: "Counselor Dashboard", href: "/counsuller", icon: UserCheck },
-        {
-          label: "Counselor Lead",
-          href: "/counsellorlead",
-          icon: UserCheck,
-        },
-
-        { label: "Employee Devices", href: "/my-devices", icon: Laptop },
-        { label: "Goals", href: "/goals", icon: Target },
-        // { label: "Settings", href: "/settings", icon: Settings },
-      ];
+    : isTelecaller
+      ? [
+          { label: "Dashboard", href: "/telecaller-analytics", icon: Target },
+          { label: "My Profile", href: "/profile", icon: User },
+          { label: "Add Student", href: "/addstudent", icon: UserCheck },
+          {
+            label: "Telecaller Lead",
+            href: "/tellcullerlead",
+            icon: UserCheck,
+          },
+          { label: "Employee Devices", href: "/my-devices", icon: Laptop },
+          { label: "Goals", href: "/goals", icon: Target },
+        ]
+      : isCounsellor
+        ? [
+            { label: "Dashboard", href: "/counsuller", icon: UserCheck },
+            { label: "My Profile", href: "/profile", icon: User },
+            { label: "Add Student", href: "/addstudent", icon: UserCheck },
+            {
+              label: "Counselor Dashboard",
+              href: "/counsuller",
+              icon: UserCheck,
+            },
+            {
+              label: "Counselor Lead",
+              href: "/counsellorlead",
+              icon: UserCheck,
+            },
+            { label: "Employee Devices", href: "/my-devices", icon: Laptop },
+            { label: "Goals", href: "/goals", icon: Target },
+          ]
+        : [
+            { label: "My Profile", href: "/profile", icon: User },
+            { label: "Add Student", href: "/addstudent", icon: UserCheck },
+            { label: "Employee Devices", href: "/my-devices", icon: Laptop },
+            { label: "Goals", href: "/goals", icon: Target },
+          ];
 
   return (
     <header className="sticky top-0 z-50 lg:hidden  border-b">
@@ -199,10 +219,10 @@ export const Header = () => {
                   <div className="hidden md:block text-left">
                     <p className="text-sm font-medium">{user?.name}</p>
                     <Badge
-                      variant={isHR ? "default" : "secondary"}
+                      variant={isAdmin ? "default" : "secondary"}
                       className="text-xs"
                     >
-                      {isHR ? "HR Manager" : "Employee"}
+                      {user?.role || "Employee"}
                     </Badge>
                   </div>
                 </Button>
@@ -212,7 +232,7 @@ export const Header = () => {
                   <p className="text-sm font-medium">{user?.name}</p>
                   <p className="text-xs text-muted-foreground">{user?.email}</p>
                   <Badge
-                    variant={isHR ? "default" : "secondary"}
+                    variant={isAdmin ? "default" : "secondary"}
                     className="text-xs mt-1"
                   >
                     {deptName || getDepartmentName(user?.department)}

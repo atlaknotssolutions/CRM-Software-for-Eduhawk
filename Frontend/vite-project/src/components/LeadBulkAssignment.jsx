@@ -22,7 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Users, Check } from "lucide-react";
 import { toast } from "react-toastify";
 
-const BASE_URL = "https://crm-software-for-eduhawk-1.onrender.com/api";
+const BASE_URL = "http://localhost:8000/api";
 
 const LeadBulkAssignment = ({ uploadedLeads = null, onAssignmentComplete }) => {
   const [leadCount, setLeadCount] = useState(0);

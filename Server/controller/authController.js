@@ -533,29 +533,28 @@ const login = async (req, res) => {
   const { email, password, role } = req.body;
 
   try {
+    // Validate input
     if (!email || !password || !role) {
       return res.status(400).json({
         status: false,
-        message: "All fields are required",
+        message: "Email, password, and role are required",
       });
     }
 
-    const user = await Employee.findOne({ email });
+    // Find user with password for verification
+    const user = await Employee.findOne(
+      { email: email.toLowerCase(), role },
+      // Include password for verification
+    );
+
     if (!user) {
       return res.status(400).json({
         status: false,
-        message: "User doesn't exist",
+        message: "Invalid credentials or role mismatch",
       });
     }
 
-    // Check if role matches
-    if (user.role !== role) {
-      return res.status(403).json({
-        status: false,
-        message: `Role mismatch. You are registered as '${user.role}'.`,
-      });
-    }
-
+    // Verify password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({
@@ -564,33 +563,49 @@ const login = async (req, res) => {
       });
     }
 
-    // Update login state and timestamp
-    await Employee.findByIdAndUpdate(user._id, {
-      isLoggedIn: true,
-      lastLogin: new Date(),
-    });
+    // Update login status after password verification
+    const updatedUser = await Employee.findByIdAndUpdate(
+      user._id,
+      {
+        isLoggedIn: true,
+        lastLogin: new Date(),
+      },
+      {
+        returnDocument: "after",
+        select: "-password -otp -otpExpiry", // Exclude sensitive fields
+      },
+    );
 
     // Generate JWT token
     const token = jwt.sign(
-      { _id: user._id, role: user.role },
+      {
+        _id: updatedUser._id,
+        role: updatedUser.role,
+        email: updatedUser.email,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
 
-    // Send login notification email
-    transporter.sendMail(
-      getLoginMailOptions(user.email, user.name),
-      (err, info) => {
-        if (err) console.error("Error sending login email:", err);
-        else console.log("Login email sent:", info.response);
-      },
-    );
+    // Send login notification email (non-blocking)
+    transporter
+      .sendMail(getLoginMailOptions(updatedUser.email, updatedUser.name))
+      .catch((err) => console.error("Login email error:", err));
 
+    // Final response (safe user data)
     res.status(200).json({
       status: true,
       message: "Login successful",
       data: {
-        user,
+        user: {
+          _id: updatedUser._id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          role: updatedUser.role,
+          profileImage: updatedUser.profileImage,
+          department: updatedUser.department,
+          lastLogin: updatedUser.lastLogin,
+        },
         token,
       },
     });
@@ -602,7 +617,6 @@ const login = async (req, res) => {
     });
   }
 };
-
 // ====================== FORGET PASSWORD ======================
 const forgetPasswordRequest = async (req, res) => {
   const { email } = req.body;

@@ -6,9 +6,10 @@ const leadSchema = new mongoose.Schema({
   parentName: { type: String, default: "" },
   city: String,
   email: String,
-  neetStatus: String,
-  budget: { type: Number, default: "" },
-  preferredCountry: String,
+  neetStatus: { type: String, enum: ["Qualified", "Not Qualified", "Not Attempted","Dropper","Pre Neet"] },
+  budget: { type: Number, default: 0 },
+  preferredCountry: { type: String, enum: ["Russia", "Bangladesh", "Nepal", "Tajikistan","Kazakhstan","Georgia","Vietnam", "Uzbekistan", "Kyrgyzstan","Nepal","Egypt","India"] },
+  gapYear: { type: Number, default: 0 },
 
   source: { type: String, default: "IVR" },
   assignedTo: String,
