@@ -286,6 +286,7 @@ const Profile = () => {
 
     // Upload to backend
     
+
     try {
       toast.info("Uploading profile image...");
       const uploaded = await uploadProfileImage(
