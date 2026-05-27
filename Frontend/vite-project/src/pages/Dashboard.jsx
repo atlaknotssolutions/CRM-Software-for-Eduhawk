@@ -609,7 +609,7 @@ const Dashboard = () => {
             <Button
               variant="outline"
               className="h-24 flex-col gap-2"
-              onClick={() => navigate("/leads/new")}
+              onClick={() => navigate("/addstudent")}
             >
               <Users className="w-6 h-6" />
               Add New Lead
@@ -617,7 +617,7 @@ const Dashboard = () => {
             <Button
               variant="outline"
               className="h-24 flex-col gap-2"
-              onClick={() => navigate("/leads")}
+              onClick={() => navigate("/admindashboard")}
             >
               <Target className="w-6 h-6" />
               All Leads
@@ -625,18 +625,18 @@ const Dashboard = () => {
             <Button
               variant="outline"
               className="h-24 flex-col gap-2"
-              onClick={() => navigate("/admissions")}
+              onClick={() => navigate("/lead-management")}
             >
               <FileCheck className="w-6 h-6" />
-              Admissions
+              LeadManagement
             </Button>
             <Button
               variant="outline"
               className="h-24 flex-col gap-2"
-              onClick={() => navigate("/visa")}
+              onClick={() => navigate("/leadbulkassignment")}
             >
               <Globe className="w-6 h-6" />
-              Visa Status
+              Lead Bulk Assignment
             </Button>
           </div>
         </CardContent>
