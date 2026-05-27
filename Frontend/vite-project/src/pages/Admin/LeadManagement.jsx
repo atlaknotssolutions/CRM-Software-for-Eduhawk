@@ -45,6 +45,9 @@ const LeadManagement = () => {
     const today = new Date();
     return today.toISOString().split("T")[0];
   });
+  const [historyPage, setHistoryPage] = useState(1);
+  const [telecallerPage, setTelecallerPage] = useState(1);
+  const telecallerPageSize = 10;
 
   const authHeader = {
     Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -170,6 +173,25 @@ const LeadManagement = () => {
     });
   }, [summary, search]);
 
+  // Pagination for Daily Team Performance
+  const [performancePage, setPerformancePage] = useState(1);
+  const performancePageSize = 10;
+
+  useEffect(() => {
+    setPerformancePage(1);
+  }, [activeTab, search, telecallerRows.length, counsellorRows.length]);
+
+  const performanceRows =
+    activeTab === "telecaller" ? telecallerRows : counsellorRows;
+  const performanceTotalPages = Math.max(
+    1,
+    Math.ceil(performanceRows.length / performancePageSize),
+  );
+  const performancePageRows = performanceRows.slice(
+    (performancePage - 1) * performancePageSize,
+    performancePage * performancePageSize,
+  );
+
   const totalAssigned = summary?.telecallerPerformance?.reduce(
     (sum, item) => sum + Number(item.totalAssigned || 0),
     0,
@@ -183,6 +205,33 @@ const LeadManagement = () => {
   const selectedDay = useMemo(() => {
     return activityCalendar.find((day) => day.date === historyDate) || null;
   }, [activityCalendar, historyDate]);
+
+  useEffect(() => {
+    setHistoryPage(1);
+  }, [historyDate, selectedDay?.events?.length]);
+
+  const historyEvents = selectedDay?.events || [];
+  const historyPageSize = 10;
+  const totalHistoryPages = Math.max(
+    1,
+    Math.ceil(historyEvents.length / historyPageSize),
+  );
+  const historyPageEvents = historyEvents.slice(
+    (historyPage - 1) * historyPageSize,
+    historyPage * historyPageSize,
+  );
+  useEffect(() => {
+    setTelecallerPage(1);
+  }, [leadSearch, filterDate, leads.length]);
+
+  const telecallerTotalPages = Math.max(
+    1,
+    Math.ceil(leads.length / telecallerPageSize),
+  );
+  const telecallerPageLeads = leads.slice(
+    (telecallerPage - 1) * telecallerPageSize,
+    telecallerPage * telecallerPageSize,
+  );
 
   return (
     <div className="container mx-auto p-6">
@@ -329,68 +378,99 @@ const LeadManagement = () => {
                 <Loader2 className="h-6 w-6 animate-spin text-slate-500" />
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Total Assigned</TableHead>
-                      <TableHead>Updated Today</TableHead>
-                      <TableHead>Converted Today</TableHead>
-                      <TableHead>
-                        {activeTab === "telecaller"
-                          ? "Follow-ups Today"
-                          : "Session"}
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {(activeTab === "telecaller"
-                      ? telecallerRows
-                      : counsellorRows
-                    ).map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.name}</TableCell>
-                        <TableCell>{row.department || "—"}</TableCell>
-                        <TableCell>
-                          <Badge
-                            className="rounded-full px-2 py-1 text-xs font-medium"
-                            style={{
-                              backgroundColor: row.color,
-                              color: "white",
-                            }}
-                          >
-                            {row.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{row.totalAssigned ?? 0}</TableCell>
-                        <TableCell>{row.updatedToday ?? 0}</TableCell>
-                        <TableCell>{row.convertedToday ?? 0}</TableCell>
-                        <TableCell>
-                          {activeTab === "telecaller"
-                            ? (row.followUpToday ?? 0)
-                            : row.sessionDuration}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {(activeTab === "telecaller"
-                      ? telecallerRows
-                      : counsellorRows
-                    ).length === 0 && (
+              <>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell
-                          colSpan={7}
-                          className="py-12 text-center text-sm text-slate-500"
-                        >
-                          No data available for selected date.
-                        </TableCell>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Total Assigned</TableHead>
+                        <TableHead>Updated Today</TableHead>
+                        <TableHead>Converted Today</TableHead>
+                        <TableHead>
+                          {activeTab === "telecaller"
+                            ? "Follow-ups Today"
+                            : "Session"}
+                        </TableHead>
                       </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {performancePageRows.map((row) => (
+                        <TableRow key={row.id}>
+                          <TableCell>{row.name}</TableCell>
+                          <TableCell>{row.department || "—"}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className="rounded-full px-2 py-1 text-xs font-medium"
+                              style={{
+                                backgroundColor: row.color,
+                                color: "white",
+                              }}
+                            >
+                              {row.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{row.totalAssigned ?? 0}</TableCell>
+                          <TableCell>{row.updatedToday ?? 0}</TableCell>
+                          <TableCell>{row.convertedToday ?? 0}</TableCell>
+                          <TableCell>
+                            {activeTab === "telecaller"
+                              ? (row.followUpToday ?? 0)
+                              : row.sessionDuration}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {performanceRows.length === 0 && (
+                        <TableRow>
+                          <TableCell
+                            colSpan={7}
+                            className="py-12 text-center text-sm text-slate-500"
+                          >
+                            No data available for selected date.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+                {performanceRows.length > performancePageSize && (
+                  <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+                    <p>
+                      Showing {performancePageRows.length} of{" "}
+                      {performanceRows.length}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={performancePage <= 1}
+                        onClick={() =>
+                          setPerformancePage((p) => Math.max(1, p - 1))
+                        }
+                      >
+                        Previous
+                      </Button>
+                      <span>
+                        Page {performancePage} of {performanceTotalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={performancePage >= performanceTotalPages}
+                        onClick={() =>
+                          setPerformancePage((p) =>
+                            Math.min(performanceTotalPages, p + 1),
+                          )
+                        }
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
@@ -441,45 +521,87 @@ const LeadManagement = () => {
                   {selectedDay &&
                   selectedDay.events &&
                   selectedDay.events.length > 0 ? (
-                    <div className="overflow-x-auto rounded-xl border bg-white">
-                      <table className="min-w-full text-sm">
-                        <thead className="bg-slate-100">
-                          <tr>
-                            <th className="px-4 py-3 text-left">Lead Name</th>
-                            <th className="px-4 py-3 text-left">Telecaller</th>
-                            <th className="px-4 py-3 text-left">Counsellor</th>
-                            <th className="px-4 py-3 text-left">Status</th>
-                            <th className="px-4 py-3 text-left">Progress</th>
-                            <th className="px-4 py-3 text-left">Time</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y">
-                          {selectedDay.events.map((event) => (
-                            <tr key={event.id} className="hover:bg-slate-50">
-                              <td className="px-4 py-3 font-medium">
-                                {event.leadName}
-                              </td>
-                              <td className="px-4 py-3 text-slate-600">
-                                {event.telecallerName}
-                              </td>
-                              <td className="px-4 py-3 text-slate-600">
-                                {event.counsellorName}
-                              </td>
-                              <td className="px-4 py-3">
-                                <Badge>{event.status}</Badge>
-                              </td>
-                              <td className="px-4 py-3">
-                                <div className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
-                                  {event.progress}
-                                </div>
-                              </td>
-                              <td className="px-4 py-3 text-slate-500">
-                                {event.time}
-                              </td>
+                    <div>
+                      <div className="overflow-x-auto rounded-xl border bg-white">
+                        <table className="min-w-full text-sm">
+                          <thead className="bg-slate-100">
+                            <tr>
+                              <th className="px-4 py-3 text-left">Lead Name</th>
+                              <th className="px-4 py-3 text-left">
+                                Telecaller
+                              </th>
+                              <th className="px-4 py-3 text-left">
+                                Counsellor
+                              </th>
+                              <th className="px-4 py-3 text-left">Status</th>
+                              <th className="px-4 py-3 text-left">Progress</th>
+                              <th className="px-4 py-3 text-left">Time</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody className="divide-y">
+                            {historyPageEvents.map((event) => (
+                              <tr key={event.id} className="hover:bg-slate-50">
+                                <td className="px-4 py-3 font-medium">
+                                  {event.leadName}
+                                </td>
+                                <td className="px-4 py-3 text-slate-600">
+                                  {event.telecallerName}
+                                </td>
+                                <td className="px-4 py-3 text-slate-600">
+                                  {event.counsellorName}
+                                </td>
+                                <td className="px-4 py-3">
+                                  <Badge>{event.status}</Badge>
+                                </td>
+                                <td className="px-4 py-3">
+                                  <div className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+                                    {event.progress}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-slate-500">
+                                  {event.time}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {historyEvents.length > historyPageSize && (
+                        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-sm text-slate-600">
+                          <p>
+                            Showing {historyPageEvents.length} of{" "}
+                            {historyEvents.length} updates
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={historyPage <= 1}
+                              onClick={() =>
+                                setHistoryPage((page) => Math.max(1, page - 1))
+                              }
+                            >
+                              Previous
+                            </Button>
+                            <span>
+                              Page {historyPage} of {totalHistoryPages}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={historyPage >= totalHistoryPages}
+                              onClick={() =>
+                                setHistoryPage((page) =>
+                                  Math.min(totalHistoryPages, page + 1),
+                                )
+                              }
+                            >
+                              Next
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-16 text-center">
@@ -551,7 +673,7 @@ const LeadManagement = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {leads.map((lead) => (
+                    {telecallerPageLeads.map((lead) => (
                       <TableRow key={lead._id}>
                         <TableCell className="font-medium">
                           {lead.name}
@@ -612,6 +734,41 @@ const LeadManagement = () => {
                     )}
                   </TableBody>
                 </Table>
+                {leads.length > telecallerPageSize && (
+                  <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+                    <p>
+                      Showing {telecallerPageLeads.length} of {leads.length}{" "}
+                      students
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={telecallerPage <= 1}
+                        onClick={() =>
+                          setTelecallerPage((p) => Math.max(1, p - 1))
+                        }
+                      >
+                        Previous
+                      </Button>
+                      <span>
+                        Page {telecallerPage} of {telecallerTotalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={telecallerPage >= telecallerTotalPages}
+                        onClick={() =>
+                          setTelecallerPage((p) =>
+                            Math.min(telecallerTotalPages, p + 1),
+                          )
+                        }
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>

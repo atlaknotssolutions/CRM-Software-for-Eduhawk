@@ -98,7 +98,7 @@ export default function TelecallerDashboard() {
 
       const matchesCountry =
         countryFilter === "all" ||
-        (lead.preferredCountry || lead.country) === countryFilter;
+        (lead.preferredCountry1 || lead.country) === countryFilter;
 
       return matchesSearch && matchesNeet && matchesCountry;
     });
@@ -213,7 +213,7 @@ export default function TelecallerDashboard() {
     const rows = leads
       .map(
         (lead) =>
-          `"${lead.name || ""}","${lead.phone || ""}","${lead.parentName || ""}","${lead.city || ""}","${lead.email || ""}","${lead.neetStatus || ""}","₹${lead.budget || 0}","${lead.preferredCountry || ""}","${lead.status || "New"}"`,
+          `"${lead.name || ""}","${lead.phone || ""}","${lead.parentName || ""}","${lead.city || ""}","${lead.email || ""}","${lead.neetStatus || ""}","₹${lead.budget || 0}","${lead.preferredCountry1 || ""}","${lead.status || "New"}"`,
       )
       .join("\n");
 
@@ -476,7 +476,7 @@ export default function TelecallerDashboard() {
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
-                            {lead.preferredCountry || "—"}
+                            {lead.preferredCountry1 || "—"}
                           </Badge>
                         </TableCell>
                         <TableCell>{getStatusBadge(lead.status)}</TableCell>

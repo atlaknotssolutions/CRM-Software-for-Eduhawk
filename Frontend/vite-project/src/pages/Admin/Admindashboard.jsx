@@ -2689,26 +2689,54 @@ const ProgressPanel = ({ lead, onSave, onCancel, saving }) => {
 
 const StudentDetails = ({ student }) => {
   if (!student) return null;
-  const rows = [
+
+  const personalRows = [
     ["Phone", student.phone],
-    ["Parent name", student.parentName],
+    ["Alternate Phone", student.phonenumber2 || "—"],
+    [
+      "Gender",
+      student.gender === "M" ? "Male" : student.gender === "F" ? "Female" : "—",
+    ],
+    ["Parent Name", student.parentName],
     ["City", student.city],
-    ["Email", student.email],
+  ];
+
+  const academicRows = [
+    ["NEET Status", student.neetStatus],
+    ["Gap Year", student.gapYear || "0"],
+    ["College Name", student.collegeName || "—"],
+    ["Preferred Country 1", student.preferredCountry1 || "—"],
+    ["Preferred Country 2", student.preferredCountry2 || "—"],
     [
       "Budget",
       student.budget
         ? `₹${Number(student.budget).toLocaleString("en-IN")}`
-        : null,
+        : "—",
     ],
-    ["NEET status", student.neetStatus],
-    ["Preferred country", student.preferredCountry],
-    ["College", student.collegeName],
-    ["Emergency contact", student.emergencyContact],
-    ["Service manager", student.serviceManager],
-    ["Follow-up date", fmtDate(student.followUpDate)],
-    ["Telecaller", student.assignedToTelecaller?.name],
-    ["Counsellor", student.assignedToCounsellor?.name],
+  ];
+
+  const assignmentRows = [
+    ["Source", student.source || "—"],
+    ["Telecaller", student.assignedToTelecaller?.name || "Unassigned"],
+    ["Counsellor", student.assignedToCounsellor?.name || "Unassigned"],
+    ["Progress Stage", student.progress || "—"],
+    ["Follow-up Date", fmtDate(student.followUpDate)],
     ["Created", fmtDate(student.createdAt)],
+  ];
+
+  const progressFields = [
+    { label: "Registration Fee Paid", value: student.registrationFeePaid },
+    { label: "Documents Submitted", value: student.documentsSubmitted },
+    { label: "Document File Ready", value: student.documentFileReady },
+    {
+      label: "College Application Done",
+      value: student.collegeApplicationDone,
+    },
+    { label: "Admission Letter Issued", value: student.admissionLetterIssued },
+    { label: "Visa Applied", value: student.visaApplied },
+    { label: "Visa Issued", value: student.visaIssued },
+    { label: "Ticket Booked", value: student.ticketBooked },
+    { label: "Departure Status", value: student.departureStatus },
   ];
 
   return (
@@ -2732,30 +2760,98 @@ const StudentDetails = ({ student }) => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-        {rows.map(([label, value]) => (
-          <div key={label} className="flex flex-col">
-            <span className="text-xs uppercase tracking-wider text-slate-400 font-medium">
-              {label}
-            </span>
-            <span className="font-medium mt-0.5 text-slate-800">
-              {value || "—"}
-            </span>
-          </div>
-        ))}
+
+      <div>
+        <h3 className="text-sm font-medium text-slate-700 mb-2">
+          Personal Information
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          {personalRows.map(([label, value]) => (
+            <div key={label} className="flex flex-col bg-slate-50 p-2 rounded">
+              <span className="text-xs uppercase tracking-wider text-slate-400 font-medium">
+                {label}
+              </span>
+              <span className="font-medium mt-1 text-slate-800">
+                {value || "—"}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-slate-700 mb-2">
+          Academic Information
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          {academicRows.map(([label, value]) => (
+            <div key={label} className="flex flex-col bg-slate-50 p-2 rounded">
+              <span className="text-xs uppercase tracking-wider text-slate-400 font-medium">
+                {label}
+              </span>
+              <span className="font-medium mt-1 text-slate-800">
+                {value || "—"}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-slate-700 mb-2">
+          Assignment & Tracking
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          {assignmentRows.map(([label, value]) => (
+            <div key={label} className="flex flex-col bg-slate-50 p-2 rounded">
+              <span className="text-xs uppercase tracking-wider text-slate-400 font-medium">
+                {label}
+              </span>
+              <span className="font-medium mt-1 text-slate-800">
+                {value || "—"}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-slate-700 mb-2">
+          Admission Progress
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+          {progressFields.map(({ label, value }) => (
+            <div
+              key={label}
+              className="flex items-center gap-2 bg-slate-50 p-2 rounded"
+            >
+              <div
+                className="w-4 h-4 rounded border flex items-center justify-center"
+                style={{
+                  backgroundColor: value ? "#10b981" : "#e5e7eb",
+                  borderColor: value ? "#059669" : "#d1d5db",
+                }}
+              >
+                {value && <span className="text-white text-xs">✓</span>}
+              </div>
+              <span className="text-slate-700">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {student.remarks?.length > 0 && (
         <div>
           <h3 className="text-sm font-medium text-slate-700 mb-2">
-            Remarks history
+            Remarks History
           </h3>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+          <div className="space-y-2 max-h-64 overflow-y-auto">
             {[...student.remarks].reverse().map((r, i) => (
               <div
                 key={i}
                 className="bg-slate-50 border rounded-lg p-3 text-sm"
               >
-                <p className="text-slate-700">{r.text}</p>
+                <p className="text-slate-700 font-medium">{r.text}</p>
                 <p className="text-xs text-slate-400 mt-1">
                   {r.by?.name || "—"} · {fmtDate(r.date)}
                 </p>
@@ -2940,7 +3036,7 @@ const AdminDashboard = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [filterTag, setFilterTag] = useState("");
   const [page, setPage] = useState(1);
-  const limit = 1000;
+  const limit = 20;
 
   // Modals
   const [detailModal, setDetailModal] = useState(null);
@@ -3389,7 +3485,8 @@ const AdminDashboard = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-10"></TableHead>
+            <TableHead className="w-12">S.No</TableHead>
+            <TableHead className="w-12"></TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Phone</TableHead>
             <TableHead>City</TableHead>
@@ -3399,7 +3496,7 @@ const AdminDashboard = () => {
             <TableHead>Telecaller</TableHead>
             <TableHead>Counsellor</TableHead>
             <TableHead>Follow-up</TableHead>
-            <TableHead className="text-center min-w-[280px]">Actions</TableHead>
+            <TableHead className="text-center min-w-[220px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -3419,8 +3516,11 @@ const AdminDashboard = () => {
               </TableCell>
             </TableRow>
           ) : (
-            data.map((lead) => (
+            data.map((lead, index) => (
               <TableRow key={lead._id} className="hover:bg-muted/50">
+                <TableCell className="font-medium text-center">
+                  {(page - 1) * limit + index + 1}
+                </TableCell>
                 <TableCell>
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-indigo-100 text-indigo-700 text-xs font-medium">
@@ -3474,15 +3574,6 @@ const AdminDashboard = () => {
                       variant="outline"
                       size="sm"
                       className="h-7 text-xs px-2"
-                      onClick={() => setEditModal(lead)}
-                    >
-                      <Edit2 className="h-3 w-3 mr-1" />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs px-2"
                       onClick={() => setProgressModal(lead)}
                     >
                       <BookOpen className="h-3 w-3 mr-1" />
@@ -3492,32 +3583,10 @@ const AdminDashboard = () => {
                       variant="outline"
                       size="sm"
                       className="h-7 text-xs px-2"
-                      onClick={() => {
-                        setRemark("");
-                        setMoveToStatus("");
-                        setRemarkModal(lead);
-                      }}
-                    >
-                      <Edit2 className="h-3 w-3 mr-1" />
-                      Remark
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs px-2"
                       onClick={() => openAssignModal(lead)}
                     >
                       <User className="h-3 w-3 mr-1" />
                       Assign
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs px-2 text-red-600 hover:bg-red-50 hover:border-red-200"
-                      onClick={() => setDeleteModal(lead)}
-                    >
-                      <Trash2 className="h-3 w-3 mr-1" />
-                      Delete
                     </Button>
                   </div>
                 </TableCell>
@@ -3605,41 +3674,6 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-white text-black p-6 lg:p-8 space-y-8">
       {/* Page header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Admin Dashboard
-          </h1>
-          <p className="text-slate-500 mt-1">
-            Full lead management &amp; team assignment
-          </p>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button
-            variant="outline"
-            onClick={fetchLeads}
-            className="h-9 text-sm"
-          >
-            <RefreshCw className="h-4 w-4 mr-1.5" />
-            Refresh
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setBulkModal(true)}
-            className="h-9 text-sm"
-          >
-            <Upload className="h-4 w-4 mr-1.5" />
-            Bulk upload
-          </Button>
-          <Button
-            onClick={() => setAddModal(true)}
-            className="h-9 text-sm bg-indigo-600 hover:bg-indigo-700 text-white"
-          >
-            <Plus className="h-4 w-4 mr-1.5" />
-            Add lead
-          </Button>
-        </div>
-      </div>
 
       <Card>
         <CardContent className="p-4">
@@ -3656,41 +3690,6 @@ const AdminDashboard = () => {
                 Use these quick actions to keep your admin workflow fast and
                 dynamic.
               </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                className="h-9 text-sm"
-                onClick={refreshAll}
-              >
-                <RefreshCw className="h-4 w-4 mr-1.5" />
-                Refresh leads
-              </Button>
-              <Button
-                variant="outline"
-                className="h-9 text-sm"
-                onClick={handleQuickFollowUp}
-              >
-                <Clock className="h-4 w-4 mr-1.5" />
-                {activeTab === "followup"
-                  ? "Open follow-up"
-                  : "Go to follow-ups"}
-              </Button>
-              <Button
-                variant="outline"
-                className="h-9 text-sm"
-                onClick={openQuickAssign}
-              >
-                <UserCheck className="h-4 w-4 mr-1.5" />
-                Quick assign
-              </Button>
-              <Button
-                onClick={() => setAddModal(true)}
-                className="h-9 text-sm bg-indigo-600 hover:bg-indigo-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-1.5" />
-                Create lead
-              </Button>
             </div>
           </div>
         </CardContent>

@@ -147,7 +147,7 @@ export const Sidebar = () => {
       ? [
           { label: "Dashboard", href: "/telecaller-analytics", icon: Target },
           { label: "My Profile", href: "/profile", icon: User },
-          { label: "Add Student", href: "/addstudent", icon: UserCheck },
+          // { label: "Add Student", href: "/addstudent", icon: UserCheck },
           {
             label: "Telecaller Lead",
             href: "/tellcullerlead",

@@ -777,14 +777,14 @@ const Employees = () => {
         open={!!editingEmployee}
         onOpenChange={(open) => !open && setEditingEmployee(null)}
       >
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
           <DialogHeader>
             <DialogTitle>Edit Employee</DialogTitle>
             <DialogDescription>Update employee information.</DialogDescription>
           </DialogHeader>
 
           {editingEmployee && (
-            <div className="grid gap-6 py-4">
+            <div className="grid gap-6 py-4 bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-name">

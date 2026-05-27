@@ -36,13 +36,24 @@ const normalizeKey = (key) => {
   if (!key) return "";
   const k = String(key).trim().toLowerCase();
 
+  // Name
   if (
     k.includes("name") &&
     !k.includes("parent") &&
     !k.includes("father") &&
-    !k.includes("mother")
+    !k.includes("mother") &&
+    !k.includes("college")
   ) {
     return "name";
+  }
+
+  // Phone numbers
+  if (
+    k.includes("phone2") ||
+    k.includes("phonenumber2") ||
+    (k.includes("phone") && k.includes("2"))
+  ) {
+    return "phonenumber2";
   }
   if (
     k.includes("phone") ||
@@ -52,18 +63,49 @@ const normalizeKey = (key) => {
   ) {
     return "phone";
   }
+
+  // Parent/Guardian
   if (k.includes("parent") || k.includes("father") || k.includes("mother")) {
     return "parentName";
   }
+
+  // Location
   if (k.includes("city") || k.includes("location") || k.includes("district")) {
     return "city";
   }
+
+  // Email
   if (k.includes("email")) return "email";
+
+  // Gender
+  if (k.includes("gender") || k.includes("sex")) return "gender";
+
+  // NEET
   if (k.includes("neet")) return "neetStatus";
+
+  // Budget
   if (k.includes("budget")) return "budget";
-  if (k.includes("country") || k.includes("prefer")) return "preferredCountry";
+
+  // Preferred Countries (check for specific 1 and 2 first)
+  if (k.includes("country1") || k.includes("preferred1"))
+    return "preferredCountry1";
+  if (k.includes("country2") || k.includes("preferred2"))
+    return "preferredCountry2";
+  if (k.includes("country") || k.includes("prefer")) return "preferredCountry1"; // Default to country1 if not specified
+
+  // Gap Year
+  if (k.includes("gap")) return "gapYear";
+
+  // Password/Academic Year
+  if (k.includes("password") || k.includes("year")) return "passwordyear";
+
+  // College
   if (k.includes("college")) return "collegeName";
+
+  // Emergency
   if (k.includes("emergency")) return "emergencyContact";
+
+  // Service Manager
   if (k.includes("service") && k.includes("manager")) return "serviceManager";
 
   return k.replace(/\s+/g, "");
@@ -335,12 +377,18 @@ exports.addLead = async (req, res) => {
     const {
       name,
       phone,
+      phonenumber2,
+      gapYear,
+      preferredCountry,
+      preferredCountry1,
+      preferredCountry2,
+      passwordyear,
+      gender,
       parentName,
       city,
       email,
       neetStatus,
       budget,
-      preferredCountry,
       collegeName,
       emergencyContact,
       status,
@@ -377,15 +425,23 @@ exports.addLead = async (req, res) => {
     const lead = await Lead.create({
       name: trimmedName,
       phone: cleanedPhone,
+      phonenumber2: cleanString(phonenumber2) || undefined,
       parentName: cleanString(parentName) || undefined,
       city: cleanString(city) || undefined,
       email: email ? String(email).trim().toLowerCase() : undefined,
       neetStatus: cleanString(neetStatus) || undefined,
       budget: parseBudget(budget),
-      preferredCountry: cleanString(preferredCountry) || undefined,
+      preferredCountry1:
+        cleanString(preferredCountry1) ||
+        cleanString(preferredCountry) ||
+        undefined,
       collegeName: cleanString(collegeName) || undefined,
       emergencyContact: cleanString(emergencyContact) || undefined,
       serviceManager: cleanString(serviceManager) || undefined,
+      passwordyear: parseInt(passwordyear) || undefined,
+      gender: cleanString(gender) || undefined,
+      preferredCountry2: cleanString(preferredCountry2) || undefined,
+      gapYear: parseInt(gapYear) || undefined,
       status: status || "New",
       leadTag: leadTag || "Warm",
     });
@@ -800,12 +856,18 @@ exports.updateLead = async (req, res) => {
     const allowedFields = [
       "name",
       "phone",
+      "phonenumber2",
       "parentName",
       "city",
       "email",
+      "gender",
       "neetStatus",
       "budget",
       "preferredCountry",
+      "preferredCountry1",
+      "preferredCountry2",
+      "gapYear",
+      "passwordyear",
       "collegeName",
       "emergencyContact",
       "serviceManager",
@@ -836,20 +898,20 @@ exports.updateLead = async (req, res) => {
     const isTelecallerLead =
       String(existingLead.status || "").toLowerCase() !== "converted";
 
-    if (isTelecallerLead && role !== "Telecaller") {
-      return res.status(403).json({
-        success: false,
-        message: "Only Telecaller can update telecaller leads.",
-      });
-    }
+    // if (isTelecallerLead && role !== "Telecaller") {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: "Only Telecaller can update telecaller leads.",
+    //   });
+    // }
 
-    if (isCounsellorLead && role !== "Counsellor" && role !== "Admin") {
-      return res.status(403).json({
-        success: false,
-        message:
-          "Only counsellors and admins can update converted counsellor leads.",
-      });
-    }
+    // if (isCounsellorLead && role !== "Counsellor" && role !== "Admin") {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message:
+    //       "Only counsellors and admins can update converted counsellor leads.",
+    //   });
+    // }
 
     const updateData = {};
     allowedFields.forEach((field) => {
@@ -857,6 +919,11 @@ exports.updateLead = async (req, res) => {
         updateData[field] = req.body[field];
       }
     });
+
+    if (req.body.preferredCountry !== undefined) {
+      updateData.preferredCountry1 = req.body.preferredCountry;
+      delete updateData.preferredCountry;
+    }
 
     const counsellorOnlyFields = [
       "counsellorRemark",
@@ -1384,15 +1451,27 @@ exports.bulkUploadLeadsWithoutAssignment = async (req, res) => {
       return {
         name: cleanString(normalized.name),
         phone: cleanedPhone,
-        parentName: cleanString(normalized.parentName || ""),
-        city: cleanString(normalized.city || ""),
-        email: cleanString(normalized.email || ""),
-        neetStatus: cleanString(normalized.neetStatus || ""),
+        phonenumber2: cleanString(normalized.phonenumber2 || "") || undefined,
+        parentName: cleanString(normalized.parentName || "") || undefined,
+        city: cleanString(normalized.city || "") || undefined,
+        email: cleanString(normalized.email || "") || undefined,
+        neetStatus: cleanString(normalized.neetStatus || "") || undefined,
         budget: Number.isFinite(budgetNumber) ? budgetNumber : undefined,
-        preferredCountry: cleanString(normalized.preferredCountry || ""),
-        collegeName: cleanString(normalized.collegeName || ""),
-        emergencyContact: cleanString(normalized.emergencyContact || ""),
-        serviceManager: cleanString(normalized.serviceManager || ""),
+        preferredCountry1:
+          cleanString(
+            normalized.preferredCountry1 || normalized.preferredCountry || "",
+          ) || undefined,
+        preferredCountry2:
+          cleanString(normalized.preferredCountry2 || "") || undefined,
+        gapYear: parseInt(normalized.gapYear) || undefined,
+        passwordyear: parseInt(normalized.passwordyear) || undefined,
+        gender: cleanString(normalized.gender || "") || undefined,
+
+        collegeName: cleanString(normalized.collegeName || "") || undefined,
+        emergencyContact:
+          cleanString(normalized.emergencyContact || "") || undefined,
+        serviceManager:
+          cleanString(normalized.serviceManager || "") || undefined,
 
         // === IMPORTANT: NO AUTO ASSIGNMENT ===
         status: "New",

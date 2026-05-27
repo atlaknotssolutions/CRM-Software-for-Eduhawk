@@ -145,7 +145,7 @@ const TelecallerAnalyticsDashboard = () => {
 
       const countryCounts = {};
       data.forEach((lead) => {
-        const country = lead.preferredCountry || "Not Set";
+        const country = lead.preferredCountry1 || "Not Set";
         countryCounts[country] = (countryCounts[country] || 0) + 1;
       });
 
@@ -192,7 +192,7 @@ const TelecallerAnalyticsDashboard = () => {
       const matchesStatus =
         filters.status === "all" || lead.status === filters.status;
       const matchesCountry =
-        filters.country === "all" || lead.preferredCountry === filters.country;
+        filters.country === "all" || lead.preferredCountry1 === filters.country;
 
       return matchesSearch && matchesTag && matchesStatus && matchesCountry;
     });
@@ -209,7 +209,7 @@ const TelecallerAnalyticsDashboard = () => {
     const rows = filteredLeads
       .map(
         (lead) =>
-          `"${lead.name || ""}","${lead.phone || ""}","${lead.city || ""}","${lead.email || ""}","${lead.leadTag || ""}","${lead.status || ""}","${lead.followUpDate || ""}","₹${lead.budget || 0}","${lead.preferredCountry || ""}"`,
+          `"${lead.name || ""}","${lead.phone || ""}","${lead.city || ""}","${lead.email || ""}","${lead.leadTag || ""}","${lead.status || ""}","${lead.followUpDate || ""}","₹${lead.budget || 0}","${lead.preferredCountry1 || ""}"`,
       )
       .join("\n");
 
