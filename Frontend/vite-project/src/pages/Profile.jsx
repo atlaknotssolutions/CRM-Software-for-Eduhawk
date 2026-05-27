@@ -285,6 +285,7 @@ const Profile = () => {
     reader.readAsDataURL(file);
 
     // Upload to backend
+    
     try {
       toast.info("Uploading profile image...");
       const uploaded = await uploadProfileImage(
