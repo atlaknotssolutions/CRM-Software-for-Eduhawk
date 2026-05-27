@@ -21,7 +21,7 @@ import {
 import { toast } from "react-toastify";
 import { format } from "date-fns";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://crm-software-for-eduhawk-2.onrender.com/api";
 
 const LeadManagement = () => {
   const [summary, setSummary] = useState(null);

@@ -66,7 +66,7 @@
 // //   Loader2,
 // // } from "lucide-react";
 
-// // const BASE_URL = "http://localhost:8000/api";
+// // const BASE_URL = "https://crm-software-for-eduhawk-2.onrender.com/api";
 
 // // const STATUS_OPTIONS = [
 // //   "New",
@@ -1062,7 +1062,7 @@
 //   Loader2,
 // } from "lucide-react";
 
-// const BASE_URL = "http://localhost:8000/api";
+// const BASE_URL = "https://crm-software-for-eduhawk-2.onrender.com/api";
 
 // const STATUS_OPTIONS = [
 //   "New",
@@ -2176,7 +2176,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://crm-software-for-eduhawk-2.onrender.com/api";
 
 const STATUS_OPTIONS = [
   "New",

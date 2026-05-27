@@ -55,7 +55,7 @@
 // } from "lucide-react";
 // import { toast } from "react-toastify";
 
-// const BASE_URL = "http://localhost:8000/api";
+// const BASE_URL = "https://crm-software-for-eduhawk-2.onrender.com/api";
 
 // const LEAD_TYPES = {
 //   Hot: { label: "🔥 Hot", variant: "destructive" },
@@ -835,7 +835,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://crm-software-for-eduhawk-2.onrender.com/api";
 
 const LEAD_TYPES = {
   Hot: { label: "🔥 Hot", variant: "destructive" },
