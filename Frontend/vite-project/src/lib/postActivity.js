@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = "https://crm-software-for-eduhawk-2.onrender.com"; // Ensure this matches your backend URL
+const API_BASE = "http://localhost:8000"; // Ensure this matches your backend URL
 
 export const postActivity = async ({
   token,

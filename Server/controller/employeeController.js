@@ -458,6 +458,7 @@ const getRemoveEmployeeMailOptions = require("../Email/removeEmployee.js");
 const bcrypt = require("bcryptjs");
 const transporter = require("../Email/nodemailer.js");
 const getAddEmployeeMailOptions = require("../Email/addEmployee.js");
+const redisClient = require("../config/redisClient");
 const { recalcDepartmentStats } = require("../utils/departmentStats.js");
 
 const toId = (val) => {
@@ -469,8 +470,21 @@ const toId = (val) => {
   }
 };
 
+const clearEmployeeCache = async (employeeId) => {
+  await redisClient.safeDelPattern("employeeList:*");
+  if (employeeId) {
+    await redisClient.safeDel(`employee:${employeeId}`);
+  }
+};
+
 const getAllEmployees = async (req, res) => {
   try {
+    const cacheKey = "employeeList:all";
+    const cached = await redisClient.safeGetJson(cacheKey);
+    if (cached) {
+      return res.status(200).json(cached);
+    }
+
     const employees = await Employee.find().populate({
       path: "department",
       select: "name",
@@ -505,11 +519,13 @@ const getAllEmployees = async (req, res) => {
       employeeId: emp.employeeId || "",
     }));
 
-    res.status(200).json({
+    const response = {
       status: true,
       message: "Employees fetched successfully",
       data: mapped,
-    });
+    };
+    await redisClient.safeSetJson(cacheKey, response, 60);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Get all employees error:", error);
     res.status(500).json({
@@ -521,6 +537,12 @@ const getAllEmployees = async (req, res) => {
 
 const getTelecallers = async (req, res) => {
   try {
+    const cacheKey = "employeeList:telecallers";
+    const cached = await redisClient.safeGetJson(cacheKey);
+    if (cached) {
+      return res.status(200).json(cached);
+    }
+
     const employees = await Employee.find({
       position: { $regex: "Telecaller", $options: "i" },
     }).populate({
@@ -543,12 +565,14 @@ const getTelecallers = async (req, res) => {
         `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name)}&background=3b82f6&color=fff`,
     }));
 
-    res.status(200).json({
+    const response = {
       status: true,
       message: "Telecallers fetched successfully",
       data: mapped,
       count: mapped.length,
-    });
+    };
+    await redisClient.safeSetJson(cacheKey, response, 60);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Get telecallers error:", error);
     res.status(500).json({
@@ -561,6 +585,12 @@ const getTelecallers = async (req, res) => {
 // ==================== GET COUNSELLORS ====================
 const getCounsellors = async (req, res) => {
   try {
+    const cacheKey = "employeeList:counsellors";
+    const cached = await redisClient.safeGetJson(cacheKey);
+    if (cached) {
+      return res.status(200).json(cached);
+    }
+
     const employees = await Employee.find({
       position: { $regex: "Counsellor", $options: "i" },
     }).populate({
@@ -583,12 +613,14 @@ const getCounsellors = async (req, res) => {
         `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name)}&background=3b82f6&color=fff`,
     }));
 
-    res.status(200).json({
+    const response = {
       status: true,
       message: "Counsellors fetched successfully",
       data: mapped,
       count: mapped.length,
-    });
+    };
+    await redisClient.safeSetJson(cacheKey, response, 60);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Get counsellors error:", error);
     res.status(500).json({
@@ -602,6 +634,12 @@ const getEmployeeById = async (req, res) => {
   const { id } = req.params;
 
   try {
+    const cacheKey = `employee:${id}`;
+    const cached = await redisClient.safeGetJson(cacheKey);
+    if (cached) {
+      return res.status(200).json(cached);
+    }
+
     const emp = await Employee.findById(id).populate({
       path: "department",
       select: "name",
@@ -634,11 +672,13 @@ const getEmployeeById = async (req, res) => {
       employeeId: emp.employeeId || "",
     };
 
-    res.status(200).json({
+    const response = {
       status: true,
       message: "Employee fetched successfully",
       data: mapped,
-    });
+    };
+    await redisClient.safeSetJson(cacheKey, response, 60);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Get employee by id error:", error);
     res.status(500).json({
@@ -714,6 +754,7 @@ const createEmployee = async (req, res) => {
     });
 
     await user.save();
+    await clearEmployeeCache(user._id);
 
     // Update department stats
     await Department.findByIdAndUpdate(depDoc._id, {
@@ -829,6 +870,7 @@ const updateEmployee = async (req, res) => {
       employeeId: employee.employeeId || "",
     };
 
+    await clearEmployeeCache(employee._id);
     res.status(200).json({
       status: true,
       message: "Employee updated successfully",
@@ -1008,6 +1050,7 @@ const deleteEmployee = async (req, res) => {
       employeeId: emp.employeeId || "",
     };
 
+    await clearEmployeeCache(emp._id);
     res.status(200).json({
       status: true,
       message: "Employee deleted successfully",
@@ -1045,6 +1088,7 @@ const resumeUpload = async (req, res) => {
     };
 
     await employee.save();
+    await clearEmployeeCache(employee._id);
 
     res.status(200).json({
       status: true,
@@ -1112,6 +1156,7 @@ const profileUpload = async (req, res) => {
       employeeId: saved.employeeId || "",
     };
 
+    await clearEmployeeCache(saved._id);
     res.status(200).json({
       status: true,
       message: "Profile image uploaded successfully",

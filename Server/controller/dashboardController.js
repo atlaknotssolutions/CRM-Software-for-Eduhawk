@@ -213,6 +213,7 @@
 
 const Lead = require("../models/lead/LeadModel");
 const User = require("../models/Employee.js"); // Your Employee model
+const redisClient = require("../config/redisClient");
 
 const formatDateTime = (date) => {
   if (!date) return "N/A";
@@ -262,6 +263,12 @@ const getStatusColor = (status) => {
 
 exports.getLeadPerformance = async (req, res) => {
   try {
+    const cacheKey = `leadPerformance:${req.user?.role || "guest"}:${req.user?._id || "all"}`;
+    const cachedPerformance = await redisClient.safeGetJson(cacheKey);
+    if (cachedPerformance) {
+      return res.status(200).json(cachedPerformance);
+    }
+
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const todayEnd = new Date(todayStart);
@@ -421,7 +428,7 @@ exports.getLeadPerformance = async (req, res) => {
       };
     });
 
-    return res.status(200).json({
+    const response = {
       success: true,
       data: {
         activeTelecallers: telecallerPerformance.filter(
@@ -435,7 +442,10 @@ exports.getLeadPerformance = async (req, res) => {
         telecallerPerformance,
         counsellorPerformance,
       },
-    });
+    };
+
+    await redisClient.safeSetJson(cacheKey, response, 60);
+    return res.status(200).json(response);
   } catch (error) {
     console.error("Lead performance error:", error);
     return res.status(500).json({
@@ -449,6 +459,11 @@ exports.getLeadPerformance = async (req, res) => {
 exports.getDashboardData = async (req, res) => {
   try {
     const { role, _id: userId } = req.user;
+    const cacheKey = `dashboardData:${role}:${userId || "all"}`;
+    const cachedDashboard = await redisClient.safeGetJson(cacheKey);
+    if (cachedDashboard) {
+      return res.status(200).json(cachedDashboard);
+    }
 
     let matchFilter = {};
 
@@ -751,7 +766,7 @@ exports.getDashboardData = async (req, res) => {
     }));
 
     // ==================== FINAL RESPONSE ====================
-    return res.status(200).json({
+    const response = {
       success: true,
       data: {
         totalLeads,
@@ -778,7 +793,10 @@ exports.getDashboardData = async (req, res) => {
         monthlyConversionData: monthlyConversion,
         role,
       },
-    });
+    };
+
+    await redisClient.safeSetJson(cacheKey, response, 60);
+    return res.status(200).json(response);
   } catch (error) {
     console.error("Dashboard data error:", error);
     return res.status(500).json({

@@ -45,7 +45,7 @@ export const Sidebar = () => {
   const isTelecaller = user?.role === "Telecaller";
   const isCounsellor = user?.role === "Counsellor";
 
-  const API_BASE = "https://crm-software-for-eduhawk-2.onrender.com";
+  const API_BASE = "http://localhost:8000";
   const token = localStorage.getItem("authToken");
 
   // Fetch department name if it's just an ID

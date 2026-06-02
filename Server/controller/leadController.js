@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Lead = require("../models/lead/LeadModel");
 const Employee = require("../models/Employee");
 const transporter = require("../Email/nodemailer.js");
+const redisClient = require("../config/redisClient");
 
 const sendEmail = async ({ to, subject, text, html }) => {
   if (!to) return;
@@ -446,6 +447,10 @@ exports.addLead = async (req, res) => {
       leadTag: leadTag || "Warm",
     });
 
+    await redisClient.safeDelPattern("leadList:*");
+    await redisClient.safeDelPattern("dashboardData:*");
+    await redisClient.safeDelPattern("leadPerformance:*");
+
     return res.status(201).json({
       success: true,
       message: "Lead added successfully.",
@@ -754,6 +759,11 @@ exports.getAllLeads = async (req, res) => {
     if (city) filter.city = { $regex: city, $options: "i" };
 
     const skip = (Number(page) - 1) * Number(limit);
+    const cacheKey = `leadList:${page}:${limit}:${search}:${status || ""}:${leadTag || ""}:${city || ""}`;
+    const cached = await redisClient.safeGetJson(cacheKey);
+    if (cached) {
+      return res.status(200).json(cached);
+    }
 
     const [leads, total] = await Promise.all([
       Lead.find(filter)
@@ -767,13 +777,16 @@ exports.getAllLeads = async (req, res) => {
       Lead.countDocuments(filter),
     ]);
 
-    return res.status(200).json({
+    const response = {
       success: true,
       total,
       page: Number(page),
       totalPages: Math.ceil(total / Number(limit)),
       data: leads,
-    });
+    };
+
+    await redisClient.safeSetJson(cacheKey, response, 120);
+    return res.status(200).json(response);
   } catch (error) {
     console.error("Get All Leads Error:", error);
     return res.status(500).json({
@@ -1041,6 +1054,10 @@ exports.updateLead = async (req, res) => {
     )
       .populate("assignedToTelecaller", "name email")
       .populate("assignedToCounsellor", "name email");
+
+    await redisClient.safeDelPattern("leadList:*");
+    await redisClient.safeDelPattern("dashboardData:*");
+    await redisClient.safeDelPattern("leadPerformance:*");
 
     return res.status(200).json({
       success: true,

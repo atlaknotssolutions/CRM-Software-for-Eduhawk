@@ -23,6 +23,7 @@ const googleRoute = require("./routes/ZoomRoutes/googleMeetRoute.js");
 const ZoomRoute = require("./routes/ZoomRoutes/zoomRoute.js");
 const deviceRoutes = require("./routes/deviceRoute/device.js");
 const goalRoutes = require("./routes/goalRoutes/goal.js");
+const redisClient = require("./config/redisClient.js");
 dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
 
 const app = express();

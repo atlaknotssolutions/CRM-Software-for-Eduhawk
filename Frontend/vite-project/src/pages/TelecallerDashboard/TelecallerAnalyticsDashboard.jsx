@@ -53,7 +53,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const BASE_URL = "https://crm-software-for-eduhawk-2.onrender.com/api";
+const BASE_URL = "http://localhost:8000/api";
 
 const TelecallerAnalyticsDashboard = () => {
   const { user } = useAuth();
