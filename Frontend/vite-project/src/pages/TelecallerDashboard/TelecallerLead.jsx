@@ -2432,7 +2432,7 @@ export default function TelecallerLead() {
                                       Status
                                     </Button>
                                   </DropdownMenuTrigger>
-                                  <DropdownMenuContent>
+                                  <DropdownMenuContent className="bg-white">
                                     <DropdownMenuLabel>
                                       Update Status
                                     </DropdownMenuLabel>
@@ -2474,7 +2474,7 @@ export default function TelecallerLead() {
                                       Tag
                                     </Button>
                                   </DropdownMenuTrigger>
-                                  <DropdownMenuContent>
+                                  <DropdownMenuContent className="bg-white">
                                     <DropdownMenuLabel>
                                       Update Lead Tag
                                     </DropdownMenuLabel>

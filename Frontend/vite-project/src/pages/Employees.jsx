@@ -42,6 +42,7 @@ import {
   UserPlus,
   Filter,
   Users,
+  IndianRupee,
 } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -499,8 +500,8 @@ const Employees = () => {
                     <span>{employee.department}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <DollarSign className="w-4 h-4" />
-                    <span>${(employee.salary ?? 0).toLocaleString()}/year</span>
+                    <IndianRupee className="w-4 h-4" />
+                    <span>₹{(employee.salary ?? 0).toLocaleString()}/year</span>
                   </div>
                 </div>
 
@@ -570,7 +571,8 @@ const Employees = () => {
                   <TableCell>{employee.department}</TableCell>
                   <TableCell>{employee.role}</TableCell>
                   <TableCell>
-                    ${(employee.salary ?? 0).toLocaleString()}
+                   
+                   ₹{(employee.salary ?? 0).toLocaleString()}
                   </TableCell>
                   <TableCell>{getStatusBadge(employee.status)}</TableCell>
                   <TableCell>
