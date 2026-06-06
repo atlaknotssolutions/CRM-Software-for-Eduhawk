@@ -568,7 +568,7 @@ export const Sidebar = () => {
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="start" className="w-56" side="right">
+          <DropdownMenuContent align="start" className="w-56 bg-white " side="right">
             <div className="px-4 py-3">
               <p className="font-medium">{user?.name}</p>
               <p className="text-xs text-muted-foreground">{user?.email}</p>
