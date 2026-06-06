@@ -335,7 +335,7 @@ export const Departments = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Budget</p>
-                  <p className="text-xl font-bold">₹{(totalBudget / 1000000).toFixed(1)}M</p>
+                  <p className="text-xl font-bold">₹{(totalBudget / 1000000).toFixed(1)}</p>
                 </div>
               </div>
             </CardContent>
