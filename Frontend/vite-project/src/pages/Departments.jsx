@@ -422,8 +422,8 @@ export const Departments = () => {
                 <div className="space-y-1">
                   <p className="text-muted-foreground">Avg Salary</p>
                   <p className="font-semibold flex items-center">
-                    <IndianRupee className="w-4 h-4 mr-1" />
-                    ₹{(department.averageSalary / 1000).toFixed(0)}k
+                    
+                    ₹{(department.averageSalary / 1000).toFixed(0)}
                   </p>
                 </div>
                 <div className="space-y-1 col-span-2">
