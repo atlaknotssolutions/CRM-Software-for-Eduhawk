@@ -27,7 +27,7 @@ function getPasswordChangeConfirmationMailOptions(email, name) {
       <p>Your password has been successfully changed. If you did not initiate this change, please contact support immediately.</p>
     </div>
     <div class="footer">
-      &copy; 2025 EDU-HAWK CRM-System. All rights reserved.
+      &copy; 2026 EDU-HAWK CRM-System. All rights reserved.
     </div>
   </div>
 </body>

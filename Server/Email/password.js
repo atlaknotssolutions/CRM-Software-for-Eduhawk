@@ -30,7 +30,7 @@ function getPasswordResetMailOptions(email, name, otp) {
                 <p>Please enter this code to proceed with changing your password. This OTP is valid for a limited time.</p>
                 </div>
                 <div class="footer">
-                &copy; 2025 EDU-HAWK CRM-System. All rights reserved.
+                &copy; 2026 EDU-HAWK CRM-System. All rights reserved.
                 </div>
             </div>
         </body>

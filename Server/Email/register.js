@@ -27,7 +27,7 @@ function getRegisterMailOptions(email, name) {
       <p>Your registration to EDU-HAWK CRM-System was successful. You can now log in and access your dashboard.</p>
     </div>
     <div class="footer">
-      &copy; 2025 EDU-HAWK CRM-System. All rights reserved.
+      &copy; 2026 EDU-HAWK CRM-System. All rights reserved.
     </div>
   </div>
 </body>
