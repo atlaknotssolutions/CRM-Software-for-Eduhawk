@@ -109,9 +109,18 @@ const login = async (req, res) => {
       });
     }
 
+    const normalizedRole = String(role).trim();
+    const validRoles = ["Admin", "Counsellor", "Telecaller"];
+    if (!validRoles.includes(normalizedRole)) {
+      return res.status(400).json({
+        status: false,
+        message: "Role must be Admin, Counsellor, or Telecaller",
+      });
+    }
+
     // Find user with password for verification
     const user = await Employee.findOne(
-      { email: email.toLowerCase(), role },
+      { email: email.toLowerCase(), role: normalizedRole },
       // Include password for verification
     );
 

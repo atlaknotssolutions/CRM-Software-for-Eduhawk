@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -42,14 +40,47 @@ export const AuthForm = () => {
 
   const [resetToken, setResetToken] = useState("");
 
+  const validateLoginForm = () => {
+    const email = loginForm.email?.trim();
+    const password = loginForm.password?.trim();
+
+    if (!email) {
+      toast.error("Email is required");
+      return false;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      toast.error("Please enter a valid email address");
+      return false;
+    }
+
+    if (!password) {
+      toast.error("Password is required");
+      return false;
+    }
+
+    if (!loginForm.role) {
+      toast.error("Please select a role");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!validateLoginForm()) return;
+
     setLoading(true);
     try {
       await login(loginForm.email, loginForm.password, loginForm.role);
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
+      if (!error?.response?.data?.message) {
+        toast.error(error.message || "Login failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -114,21 +145,34 @@ export const AuthForm = () => {
     }
   };
 
-  const isForgotMode = ["forgot-email", "forgot-code", "forgot-password"].includes(mode);
+  const isForgotMode = [
+    "forgot-email",
+    "forgot-code",
+    "forgot-password",
+  ].includes(mode);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4"
-      style={{ background: "linear-gradient(135deg, #eef2ff 0%, #f8faff 60%, #e0e7ff 100%)" }}>
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{
+        background:
+          "linear-gradient(135deg, #eef2ff 0%, #f8faff 60%, #e0e7ff 100%)",
+      }}
+    >
       <div className="w-full max-w-md">
-
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center shadow-md overflow-hidden"
-            style={{ background: "linear-gradient(135deg, #4f46e5, #818cf8)" }}>
+          <div
+            className="w-11 h-11 rounded-xl flex items-center justify-center shadow-md overflow-hidden"
+            style={{ background: "linear-gradient(135deg, #4f46e5, #818cf8)" }}
+          >
             <img src={logo} alt="Logo" className="w-full h-full object-cover" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-indigo-950 leading-tight" style={{ fontFamily: "'Sora', sans-serif" }}>
+            <h1
+              className="text-xl font-bold text-indigo-950 leading-tight"
+              style={{ fontFamily: "'Sora', sans-serif" }}
+            >
               Edu-Hawk
             </h1>
             <p className="text-xs font-semibold text-indigo-500 uppercase tracking-widest">
@@ -138,47 +182,69 @@ export const AuthForm = () => {
         </div>
 
         <Card className="shadow-2xl border border-indigo-100 rounded-3xl bg-white overflow-hidden">
-
           <CardHeader className="pt-5 pb-2 px-6">
             {mode === "login" && (
               <>
-                <CardTitle className="text-xl text-indigo-950">Welcome back</CardTitle>
-                <CardDescription className="text-gray-500">Sign in to access your dashboard</CardDescription>
+                <CardTitle className="text-xl text-indigo-950">
+                  Welcome back
+                </CardTitle>
+                <CardDescription className="text-gray-500">
+                  Sign in to access your dashboard
+                </CardDescription>
               </>
             )}
             {mode === "forgot-email" && (
               <>
-                <CardTitle className="text-xl text-indigo-950">Reset password</CardTitle>
-                <CardDescription className="text-gray-500">Enter your email to receive a reset code</CardDescription>
+                <CardTitle className="text-xl text-indigo-950">
+                  Reset password
+                </CardTitle>
+                <CardDescription className="text-gray-500">
+                  Enter your email to receive a reset code
+                </CardDescription>
               </>
             )}
             {mode === "forgot-code" && (
               <>
-                <CardTitle className="text-xl text-indigo-950">Verify code</CardTitle>
-                <CardDescription className="text-gray-500">Enter the 6-digit code sent to your email</CardDescription>
+                <CardTitle className="text-xl text-indigo-950">
+                  Verify code
+                </CardTitle>
+                <CardDescription className="text-gray-500">
+                  Enter the 6-digit code sent to your email
+                </CardDescription>
               </>
             )}
             {mode === "forgot-password" && (
               <>
                 <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 text-xs font-medium px-3 py-1.5 rounded-full mb-2">
-                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg
+                    className="w-3 h-3"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
                   Identity verified
                 </div>
-                <CardTitle className="text-xl text-indigo-950">New password</CardTitle>
-                <CardDescription className="text-gray-500">Create your new secure password</CardDescription>
+                <CardTitle className="text-xl text-indigo-950">
+                  New password
+                </CardTitle>
+                <CardDescription className="text-gray-500">
+                  Create your new secure password
+                </CardDescription>
               </>
             )}
           </CardHeader>
 
           <CardContent className="px-6 pb-8 space-y-4">
-
             {/* LOGIN FORM */}
             {mode === "login" && (
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</Label>
+                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Role
+                  </Label>
                   <div className="flex gap-2">
                     {["Telecaller", "Counsellor", "Admin"].map((r) => (
                       <button
@@ -198,7 +264,9 @@ export const AuthForm = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Email Address</Label>
+                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Email Address
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                     <Input
@@ -206,7 +274,9 @@ export const AuthForm = () => {
                       placeholder="you@company.com"
                       className="pl-9 h-11 border-gray-200 bg-gray-50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl"
                       value={loginForm.email}
-                      onChange={(e) => setLoginForm((p) => ({ ...p, email: e.target.value }))}
+                      onChange={(e) =>
+                        setLoginForm((p) => ({ ...p, email: e.target.value }))
+                      }
                       required
                     />
                   </div>
@@ -214,7 +284,9 @@ export const AuthForm = () => {
 
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
-                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Password</Label>
+                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      Password
+                    </Label>
                     <button
                       type="button"
                       onClick={() => setMode("forgot-email")}
@@ -230,7 +302,12 @@ export const AuthForm = () => {
                       placeholder="••••••••"
                       className="pl-9 h-11 border-gray-200 bg-gray-50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl"
                       value={loginForm.password}
-                      onChange={(e) => setLoginForm((p) => ({ ...p, password: e.target.value }))}
+                      onChange={(e) =>
+                        setLoginForm((p) => ({
+                          ...p,
+                          password: e.target.value,
+                        }))
+                      }
                       required
                     />
                   </div>
@@ -240,7 +317,9 @@ export const AuthForm = () => {
                   type="submit"
                   disabled={loading}
                   className="w-full h-11 text-sm font-semibold rounded-xl text-white border-0"
-                  style={{ background: "linear-gradient(135deg, #4f46e5, #6366f1)" }}
+                  style={{
+                    background: "linear-gradient(135deg, #4f46e5, #6366f1)",
+                  }}
                 >
                   {loading ? "Signing In..." : "Sign In"}
                 </Button>
@@ -251,7 +330,9 @@ export const AuthForm = () => {
             {mode === "forgot-email" && (
               <form onSubmit={handleForgotEmail} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Email Address</Label>
+                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Email Address
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                     <Input
@@ -259,7 +340,9 @@ export const AuthForm = () => {
                       placeholder="you@company.com"
                       className="pl-9 h-11 border-gray-200 bg-gray-50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl"
                       value={forgotForm.email}
-                      onChange={(e) => setForgotForm((p) => ({ ...p, email: e.target.value }))}
+                      onChange={(e) =>
+                        setForgotForm((p) => ({ ...p, email: e.target.value }))
+                      }
                       required
                     />
                   </div>
@@ -268,7 +351,9 @@ export const AuthForm = () => {
                   type="submit"
                   disabled={loading}
                   className="w-full h-11 text-sm font-semibold rounded-xl text-white border-0"
-                  style={{ background: "linear-gradient(135deg, #4f46e5, #6366f1)" }}
+                  style={{
+                    background: "linear-gradient(135deg, #4f46e5, #6366f1)",
+                  }}
                 >
                   {loading ? "Sending Code..." : "Send Reset Code"}
                 </Button>
@@ -292,7 +377,11 @@ export const AuthForm = () => {
                     Verification Code
                   </Label>
                   <div className="flex justify-center">
-                    <InputOTP value={otpCode} onChange={setOtpCode} maxLength={6}>
+                    <InputOTP
+                      value={otpCode}
+                      onChange={setOtpCode}
+                      maxLength={6}
+                    >
                       <InputOTPGroup>
                         <InputOTPSlot index={0} />
                         <InputOTPSlot index={1} />
@@ -308,7 +397,9 @@ export const AuthForm = () => {
                   type="submit"
                   disabled={otpCode.length !== 6 || loading}
                   className="w-full h-11 text-sm font-semibold rounded-xl text-white border-0"
-                  style={{ background: "linear-gradient(135deg, #4f46e5, #6366f1)" }}
+                  style={{
+                    background: "linear-gradient(135deg, #4f46e5, #6366f1)",
+                  }}
                 >
                   {loading ? "Verifying..." : "Verify Code"}
                 </Button>
@@ -328,7 +419,9 @@ export const AuthForm = () => {
             {mode === "forgot-password" && (
               <form onSubmit={handlePasswordReset} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">New Password</Label>
+                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    New Password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                     <Input
@@ -336,13 +429,20 @@ export const AuthForm = () => {
                       placeholder="Enter new password"
                       className="pl-9 h-11 border-gray-200 bg-gray-50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl"
                       value={forgotForm.newPassword}
-                      onChange={(e) => setForgotForm((p) => ({ ...p, newPassword: e.target.value }))}
+                      onChange={(e) =>
+                        setForgotForm((p) => ({
+                          ...p,
+                          newPassword: e.target.value,
+                        }))
+                      }
                       required
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Confirm New Password</Label>
+                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Confirm New Password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                     <Input
@@ -350,7 +450,12 @@ export const AuthForm = () => {
                       placeholder="Confirm new password"
                       className="pl-9 h-11 border-gray-200 bg-gray-50 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl"
                       value={forgotForm.confirmPassword}
-                      onChange={(e) => setForgotForm((p) => ({ ...p, confirmPassword: e.target.value }))}
+                      onChange={(e) =>
+                        setForgotForm((p) => ({
+                          ...p,
+                          confirmPassword: e.target.value,
+                        }))
+                      }
                       required
                     />
                   </div>
@@ -359,13 +464,14 @@ export const AuthForm = () => {
                   type="submit"
                   disabled={loading}
                   className="w-full h-11 text-sm font-semibold rounded-xl text-white border-0"
-                  style={{ background: "linear-gradient(135deg, #4f46e5, #6366f1)" }}
+                  style={{
+                    background: "linear-gradient(135deg, #4f46e5, #6366f1)",
+                  }}
                 >
                   {loading ? "Resetting Password..." : "Reset Password"}
                 </Button>
               </form>
             )}
-
           </CardContent>
         </Card>
 

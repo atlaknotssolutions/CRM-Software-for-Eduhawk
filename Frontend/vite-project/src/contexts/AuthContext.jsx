@@ -46,10 +46,15 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password, role) => {
     try {
+      const normalizedRole =
+        ["Admin", "Counsellor", "Telecaller"].find(
+          (value) => value.toLowerCase() === String(role).trim().toLowerCase(),
+        ) || String(role).trim();
+
       const response = await axios.post(`${API_URL}/api/auth/login`, {
-        email,
+        email: String(email).trim(),
         password,
-        role,
+        role: normalizedRole,
       });
       const data = response.data;
       if (!data.status) throw new Error(data.message);
@@ -73,9 +78,11 @@ export const AuthProvider = ({ children }) => {
       toast.success(`Welcome back, ${data.data.user.name}!`);
       return data.data.user;
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Login failed. Please try again.",
-      );
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Login failed. Please try again.";
+      toast.error(message);
       throw error;
     }
   };

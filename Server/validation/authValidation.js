@@ -31,53 +31,53 @@
 
 // export default authValidation;
 
-
 const Joi = require("joi");
 
 // ====================== REGISTER VALIDATION ======================
 const registerValidation = (data) => {
   const schema = Joi.object({
-    name: Joi.string().min(3).max(100).trim().required()
-      .messages({
-        "string.empty": "Name is required",
-        "string.min": "Name must be at least 3 characters long",
-        "string.max": "Name cannot exceed 100 characters"
-      }),
+    name: Joi.string().min(3).max(100).trim().required().messages({
+      "string.empty": "Name is required",
+      "string.min": "Name must be at least 3 characters long",
+      "string.max": "Name cannot exceed 100 characters",
+    }),
 
-    email: Joi.string().email().trim().lowercase().required()
-      .messages({
-        "string.empty": "Email is required",
-        "string.email": "Please provide a valid email"
-      }),
+    email: Joi.string().email().trim().lowercase().required().messages({
+      "string.empty": "Email is required",
+      "string.email": "Please provide a valid email",
+    }),
 
-    password: Joi.string().min(6).max(100).required()
-      .messages({
-        "string.empty": "Password is required",
-        "string.min": "Password must be at least 6 characters long"
-      }),
+    password: Joi.string().min(6).max(100).required().messages({
+      "string.empty": "Password is required",
+      "string.min": "Password must be at least 6 characters long",
+    }),
 
-    confirmPassword: Joi.string().valid(Joi.ref("password")).required()
+    confirmPassword: Joi.string()
+      .valid(Joi.ref("password"))
+      .required()
       .messages({
-        "any.only": "Confirm password must match with password"
+        "any.only": "Confirm password must match with password",
       }),
 
     role: Joi.string()
-      .valid("admin", "telecaller", "counsellor")
+      .valid("Admin", "Telecaller", "Counsellor")
       .required()
       .messages({
-        "any.only": "Role must be admin, telecaller or counsellor"
+        "any.only": "Role must be Admin, Telecaller or Counsellor",
       }),
 
     department: Joi.string().allow("", null),
     departmentId: Joi.string().allow("", null),
 
     avatar: Joi.string().allow("", null),
-    phone: Joi.string().pattern(/^[0-9]{10}$/).allow("", null)
+    phone: Joi.string()
+      .pattern(/^[0-9]{10}$/)
+      .allow("", null)
       .messages({
-        "string.pattern.base": "Phone number must be 10 digits"
+        "string.pattern.base": "Phone number must be 10 digits",
       }),
 
-    gender: Joi.string().valid("M", "F").allow("", null)
+    gender: Joi.string().valid("M", "F").allow("", null),
   });
 
   return schema.validate(data, { abortEarly: false });
@@ -86,23 +86,21 @@ const registerValidation = (data) => {
 // ====================== LOGIN VALIDATION ======================
 const loginValidation = (data) => {
   const schema = Joi.object({
-    email: Joi.string().email().trim().lowercase().required()
-      .messages({
-        "string.empty": "Email is required",
-        "string.email": "Please provide a valid email"
-      }),
+    email: Joi.string().email().trim().lowercase().required().messages({
+      "string.empty": "Email is required",
+      "string.email": "Please provide a valid email",
+    }),
 
-    password: Joi.string().min(6).required()
-      .messages({
-        "string.empty": "Password is required"
-      }),
+    password: Joi.string().min(6).required().messages({
+      "string.empty": "Password is required",
+    }),
 
     role: Joi.string()
-      .valid("admin", "telecaller", "counsellor")
+      .valid("Admin", "Telecaller", "Counsellor")
       .required()
       .messages({
-        "any.only": "Role must be admin, telecaller or counsellor"
-      })
+        "any.only": "Role must be Admin, Telecaller or Counsellor",
+      }),
   });
 
   return schema.validate(data, { abortEarly: false });
@@ -111,11 +109,10 @@ const loginValidation = (data) => {
 // ====================== FORGET PASSWORD VALIDATION ======================
 const forgetPasswordValidation = (data) => {
   const schema = Joi.object({
-    email: Joi.string().email().trim().lowercase().required()
-      .messages({
-        "string.empty": "Email is required",
-        "string.email": "Please provide a valid email"
-      })
+    email: Joi.string().email().trim().lowercase().required().messages({
+      "string.empty": "Email is required",
+      "string.email": "Please provide a valid email",
+    }),
   });
 
   return schema.validate(data, { abortEarly: false });
@@ -125,11 +122,14 @@ const forgetPasswordValidation = (data) => {
 const verifyOTPValidation = (data) => {
   const schema = Joi.object({
     email: Joi.string().email().trim().lowercase().required(),
-    otp: Joi.string().length(6).pattern(/^[0-9]{6}$/).required()
+    otp: Joi.string()
+      .length(6)
+      .pattern(/^[0-9]{6}$/)
+      .required()
       .messages({
         "string.length": "OTP must be 6 digits",
-        "string.pattern.base": "OTP must contain only numbers"
-      })
+        "string.pattern.base": "OTP must contain only numbers",
+      }),
   });
 
   return schema.validate(data, { abortEarly: false });
@@ -140,10 +140,12 @@ const resetPasswordValidation = (data) => {
   const schema = Joi.object({
     resetToken: Joi.string().required(),
     newPassword: Joi.string().min(6).max(100).required(),
-    confirmNewPassword: Joi.string().valid(Joi.ref("newPassword")).required()
+    confirmNewPassword: Joi.string()
+      .valid(Joi.ref("newPassword"))
+      .required()
       .messages({
-        "any.only": "New passwords do not match"
-      })
+        "any.only": "New passwords do not match",
+      }),
   });
 
   return schema.validate(data, { abortEarly: false });
