@@ -26,6 +26,7 @@ const register = async (req, res) => {
       });
     }
 
+    
     // Check if employee already exists
     const existing = await Employee.findOne({ email });
     if (existing) {
