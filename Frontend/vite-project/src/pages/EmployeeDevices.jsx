@@ -18,7 +18,7 @@
 //     marginTop: "20px"
 //   };
 
-//   const statCardsContainerStyle = {    
+//   const statCardsContainerStyle = {
 //     alignItems: "stretch",
 //   };
 
@@ -215,8 +215,8 @@
 //             {myDevices.map((device) => {
 //               const DeviceIcon = getDeviceIcon(device.type);
 //               return (
-//                 <div 
-//                   key={device.id} 
+//                 <div
+//                   key={device.id}
 //                   className="flex items-center justify-between p-4 rounded-lg border hover:shadow-md transition-shadow"
 //                 >
 //                   <div className="flex items-center space-x-4">
@@ -239,7 +239,7 @@
 //                     </div>
 //                   </div>
 //                   <div className="flex items-center space-x-3">
-//                     <Badge 
+//                     <Badge
 //                       className={getConditionColor(device.condition)}
 //                     >
 //                       {device.condition}
@@ -347,10 +347,10 @@
 //           <CardContent>
 //             <div className="space-y-3">
 //               <p className="text-sm">
-//                 <strong>IT Support:</strong> getachewhabtamu29@gmail.com
+//                 <strong>IT Support:</strong> eduhawk.global@gmail.com
 //               </p>
 //               <p className="text-sm">
-//                 <strong>Phone:</strong> +2519-2469-9554
+//                 <strong>Phone:</strong> ++91 9630736070
 //               </p>
 //               <p className="text-sm">
 //                 <strong>Office Hours:</strong> Monday - Friday, 9:00 AM - 6:00 PM
@@ -365,22 +365,35 @@
 
 // export default EmployeeDevices;
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { useAuth } from "../contexts/AuthContext";
+import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = import.meta.env.VITE_API_URL || "";
 
 import {
-  Laptop, Tablet, Smartphone, Monitor, Keyboard, Mouse,
-  Calendar, MapPin, User, Clock
-} from 'lucide-react';
+  Laptop,
+  Tablet,
+  Smartphone,
+  Monitor,
+  Keyboard,
+  Mouse,
+  Calendar,
+  MapPin,
+  User,
+  Clock,
+} from "lucide-react";
 
 const EmployeeDevices = () => {
-
   const { user } = useAuth();
 
   // Live device state
@@ -389,53 +402,81 @@ const EmployeeDevices = () => {
 
   const getDeviceIcon = (type) => {
     switch (type) {
-      case 'laptop': return Laptop;
-      case 'tablet': return Tablet;
-      case 'phone': return Smartphone;
-      case 'monitor': return Monitor;
-      case 'accessory': return Keyboard;
-      default: return Laptop;
+      case "laptop":
+        return Laptop;
+      case "tablet":
+        return Tablet;
+      case "phone":
+        return Smartphone;
+      case "monitor":
+        return Monitor;
+      case "accessory":
+        return Keyboard;
+      default:
+        return Laptop;
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return 'default';
-      case 'maintenance': return 'warning';
-      case 'returned': return 'secondary';
-      default: return 'outline';
+      case "active":
+        return "default";
+      case "maintenance":
+        return "warning";
+      case "returned":
+        return "secondary";
+      default:
+        return "outline";
     }
   };
 
   const getConditionColor = (condition) => {
     switch (condition) {
-      case 'excellent': return 'bg-green-100 text-green-700 border-green-200';
-      case 'good': return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'fair': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'poor': return 'bg-red-100 text-red-700 border-red-200';
-      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+      case "excellent":
+        return "bg-green-100 text-green-700 border-green-200";
+      case "good":
+        return "bg-blue-100 text-blue-700 border-blue-200";
+      case "fair":
+        return "bg-yellow-100 text-yellow-700 border-yellow-200";
+      case "poor":
+        return "bg-red-100 text-red-700 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-700 border-gray-200";
     }
   };
 
   const normalizeDevice = (d) => {
     const id = d._id || d.id || d.deviceId || null;
-    const name = d.name || d.deviceName || d.raw?.name || '';
-    const type = d.type || d.deviceType || '';
-    const model = d.model || '';
-    const serialNumber = d.serialNumber || d.serial || '';
-    const assignedDate = d.assignedDate || d.assignedAt || d.assignedOn || d.assigned || null;
-    const status = d.status || 'active';
-    const location = d.location || '';
-    const condition = d.condition || 'good';
-    return { id, name, type, model, serialNumber, assignedDate, status, location, condition, raw: d };
+    const name = d.name || d.deviceName || d.raw?.name || "";
+    const type = d.type || d.deviceType || "";
+    const model = d.model || "";
+    const serialNumber = d.serialNumber || d.serial || "";
+    const assignedDate =
+      d.assignedDate || d.assignedAt || d.assignedOn || d.assigned || null;
+    const status = d.status || "active";
+    const location = d.location || "";
+    const condition = d.condition || "good";
+    return {
+      id,
+      name,
+      type,
+      model,
+      serialNumber,
+      assignedDate,
+      status,
+      location,
+      condition,
+      raw: d,
+    };
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     setLoading(true);
-    axios.get(`${API_BASE}/api/devices/me`, { headers })
-      .then(res => {
+    axios
+      .get(`${API_BASE}/api/devices/me`, { headers })
+      .then((res) => {
         const payload = res.data?.data || res.data;
         if (Array.isArray(payload)) {
           setMyDevices(payload.map(normalizeDevice));
@@ -445,8 +486,8 @@ const EmployeeDevices = () => {
           setMyDevices([]);
         }
       })
-      .catch(err => {
-        console.error('Failed to load employee devices', err);
+      .catch((err) => {
+        console.error("Failed to load employee devices", err);
         setMyDevices([]);
       })
       .finally(() => setLoading(false));
@@ -458,12 +499,18 @@ const EmployeeDevices = () => {
       <div className="bg-gradient-to-r from-white to-blue-50 border border-blue-100 rounded-2xl p-8 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-gray-900">My Company Devices</h1>
-            <p className="text-gray-600">Devices assigned to you by the company</p>
+            <h1 className="text-3xl font-bold mb-2 text-gray-900">
+              My Company Devices
+            </h1>
+            <p className="text-gray-600">
+              Devices assigned to you by the company
+            </p>
           </div>
           <div className="hidden md:block">
             <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-              <div className="text-2xl font-bold text-gray-900">{myDevices.length}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {myDevices.length}
+              </div>
               <div className="text-sm text-gray-500">Total Devices</div>
             </div>
           </div>
@@ -481,7 +528,7 @@ const EmployeeDevices = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {myDevices.filter(d => d.type === 'laptop').length}
+                    {myDevices.filter((d) => d.type === "laptop").length}
                   </p>
                   <p className="text-sm text-gray-500">Laptops</p>
                 </div>
@@ -499,7 +546,7 @@ const EmployeeDevices = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {myDevices.filter(d => d.type === 'tablet').length}
+                    {myDevices.filter((d) => d.type === "tablet").length}
                   </p>
                   <p className="text-sm text-gray-500">Tablets</p>
                 </div>
@@ -517,7 +564,7 @@ const EmployeeDevices = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {myDevices.filter(d => d.type === 'phone').length}
+                    {myDevices.filter((d) => d.type === "phone").length}
                   </p>
                   <p className="text-sm text-gray-500">Phones</p>
                 </div>
@@ -535,7 +582,11 @@ const EmployeeDevices = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {myDevices.filter(d => ['monitor', 'accessory'].includes(d.type)).length}
+                    {
+                      myDevices.filter((d) =>
+                        ["monitor", "accessory"].includes(d.type),
+                      ).length
+                    }
                   </p>
                   <p className="text-sm text-gray-500">Accessories</p>
                 </div>
@@ -561,8 +612,8 @@ const EmployeeDevices = () => {
             {myDevices.map((device) => {
               const DeviceIcon = getDeviceIcon(device.type);
               return (
-                <div 
-                  key={device.id} 
+                <div
+                  key={device.id}
                   className="flex items-center justify-between p-5 rounded-xl border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all bg-white"
                 >
                   <div className="flex items-center space-x-4">
@@ -570,16 +621,21 @@ const EmployeeDevices = () => {
                       <DeviceIcon className="w-6 h-6 text-gray-700" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-lg text-gray-900">{device.name}</h4>
+                      <h4 className="font-semibold text-lg text-gray-900">
+                        {device.name}
+                      </h4>
                       <p className="text-gray-600">{device.model}</p>
                       <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                         <div className="flex items-center space-x-1">
                           <Calendar className="w-4 h-4" />
-                          <span>Assigned: {new Date(device.assignedDate).toLocaleDateString()}</span>
+                          <span>
+                            Assigned:{" "}
+                            {new Date(device.assignedDate).toLocaleDateString()}
+                          </span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <MapPin className="w-4 h-4" />
-                          <span>{device.location || 'N/A'}</span>
+                          <span>{device.location || "N/A"}</span>
                         </div>
                       </div>
                     </div>
@@ -616,10 +672,14 @@ const EmployeeDevices = () => {
               {loading ? (
                 <div className="text-sm text-gray-500">Loading history...</div>
               ) : myDevices.length === 0 ? (
-                <div className="text-sm text-gray-500">No device history available.</div>
+                <div className="text-sm text-gray-500">
+                  No device history available.
+                </div>
               ) : (
                 // ... (your existing history logic remains same)
-                <div className="text-sm text-gray-500">History items will appear here</div>
+                <div className="text-sm text-gray-500">
+                  History items will appear here
+                </div>
               )}
             </div>
           </CardContent>
@@ -635,9 +695,16 @@ const EmployeeDevices = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3 text-gray-700">
-              <p><strong>IT Support:</strong> getachewhabtamu29@gmail.com</p>
-              <p><strong>Phone:</strong> +2519-2469-9554</p>
-              <p><strong>Office Hours:</strong> Monday - Friday, 9:00 AM - 6:00 PM</p>
+              <p>
+                <strong>IT Support:</strong> eduhawk.global@gmail.com
+              </p>
+              <p>
+                <strong>Phone:</strong> ++91 9630736070
+              </p>
+              <p>
+                <strong>Office Hours:</strong> Monday - Friday, 9:00 AM - 6:00
+                PM
+              </p>
             </div>
           </CardContent>
         </Card>

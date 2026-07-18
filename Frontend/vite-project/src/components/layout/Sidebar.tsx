@@ -342,7 +342,6 @@
 //   );
 // };
 
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
@@ -418,9 +417,12 @@ export const Sidebar = () => {
     if (typeof department === "string") {
       const fetchDepartment = async () => {
         try {
-          const res = await axios.get(`${API_BASE}/api/departments/${department}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const res = await axios.get(
+            `${API_BASE}/api/departments/${department}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
           if (mounted) {
             setDeptName(res.data?.data?.name || res.data?.name || "");
           }
@@ -432,22 +434,16 @@ export const Sidebar = () => {
       fetchDepartment();
     }
 
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [user?.department, API_BASE, token]);
 
   const toggleTheme = () => {
-    if (theme === "light") setTheme("dark");
-    else if (theme === "dark") setTheme("system");
-    else setTheme("light");
+    setTheme("light");
   };
 
-  const getThemeIcon = () => {
-    switch (theme) {
-      case "light": return Sun;
-      case "dark": return Moon;
-      default: return Monitor;
-    }
-  };
+  const getThemeIcon = () => Sun;
 
   const ThemeIcon = getThemeIcon();
 
@@ -460,7 +456,11 @@ export const Sidebar = () => {
         { label: "My Profile", href: "/profile", icon: User },
         { label: "Add Student", href: "/addstudent", icon: UserCheck },
         { label: "Departments", href: "/department", icon: Building2 },
-        { label: "Assign Students", href: "/leadbulkassignment", icon: Calendar },
+        {
+          label: "Assign Students",
+          href: "/leadbulkassignment",
+          icon: Calendar,
+        },
         { label: "Lead Management", href: "/lead-management", icon: List },
         { label: "Lead Dashboard", href: "/admindashboard", icon: UserCheck },
         { label: "Employee Devices", href: "/device-management", icon: Laptop },
@@ -470,7 +470,11 @@ export const Sidebar = () => {
       ? [
           { label: "Dashboard", href: "/telecaller-analytics", icon: Target },
           { label: "My Profile", href: "/profile", icon: User },
-          { label: "Telecaller Lead", href: "/tellcullerlead", icon: UserCheck },
+          {
+            label: "Telecaller Lead",
+            href: "/tellcullerlead",
+            icon: UserCheck,
+          },
           { label: "Employee Devices", href: "/my-devices", icon: Laptop },
           { label: "Goals", href: "/goals", icon: Target },
         ]
@@ -479,8 +483,16 @@ export const Sidebar = () => {
             { label: "Dashboard", href: "/dashboard", icon: UserCheck },
             { label: "My Profile", href: "/profile", icon: User },
             { label: "Add Student", href: "/addstudent", icon: UserCheck },
-            { label: "Assign Students", href: "/leadbulkassignment", icon: Calendar },
-            { label: "Counselor Lead", href: "/counsellorlead", icon: UserCheck },
+            {
+              label: "Assign Students",
+              href: "/leadbulkassignment",
+              icon: Calendar,
+            },
+            {
+              label: "Counselor Lead",
+              href: "/counsellorlead",
+              icon: UserCheck,
+            },
             { label: "Employee Devices", href: "/my-devices", icon: Laptop },
             { label: "Goals", href: "/goals", icon: Target },
           ]
@@ -528,7 +540,9 @@ export const Sidebar = () => {
                   }`}
                   title={isCollapsed ? item.label : undefined}
                 >
-                  <Icon className={`w-5 h-5 flex-shrink-0 ${active ? "text-white" : ""}`} />
+                  <Icon
+                    className={`w-5 h-5 flex-shrink-0 ${active ? "text-white" : ""}`}
+                  />
                   {!isCollapsed && (
                     <span className="text-sm font-medium">{item.label}</span>
                   )}
@@ -568,7 +582,11 @@ export const Sidebar = () => {
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="start" className="w-56 bg-white " side="right">
+          <DropdownMenuContent
+            align="start"
+            className="w-56 bg-white "
+            side="right"
+          >
             <div className="px-4 py-3">
               <p className="font-medium">{user?.name}</p>
               <p className="text-xs text-muted-foreground">{user?.email}</p>
@@ -623,7 +641,9 @@ export const Sidebar = () => {
               isCollapsed ? "rotate-180" : ""
             }`}
           />
-          {!isCollapsed && <span className="ml-3 text-sm">Collapse Sidebar</span>}
+          {!isCollapsed && (
+            <span className="ml-3 text-sm">Collapse Sidebar</span>
+          )}
         </Button>
       </div>
     </aside>

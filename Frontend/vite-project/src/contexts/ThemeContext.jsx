@@ -11,10 +11,7 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem("theme");
-    return saved || "light";
-  });
+  const [theme, setTheme] = useState("light");
 
   const [colorScheme, setColorScheme] = useState(() => {
     const saved = localStorage.getItem("colorScheme");
@@ -24,42 +21,21 @@ export const ThemeProvider = ({ children }) => {
   useEffect(() => {
     const root = document.documentElement;
 
-    const applyTheme = () => {
-      // Reset
-      root.classList.remove("dark");
+    root.classList.remove("dark");
+    root.style.colorScheme = "light";
 
-      if (theme === "dark") {
-        root.classList.add("dark");
-      } else if (theme === "system") {
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-        if (prefersDark.matches) {
-          root.classList.add("dark");
-        }
-      }
+    document.body.style.display = "none";
+    document.body.offsetHeight;
+    document.body.style.display = "";
 
-      // Optional: force repaint to prevent flicker
-      document.body.style.display = "none";
-      document.body.offsetHeight; // trigger reflow
-      document.body.style.display = "";
-    };
-
-    applyTheme();
-
-    if (theme === "system") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      const handleChange = () => applyTheme();
-      mediaQuery.addEventListener("change", handleChange);
-      return () => mediaQuery.removeEventListener("change", handleChange);
-    }
-  }, [theme]);
+    localStorage.setItem("theme", "light");
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
 
-    // Apply color scheme
     root.setAttribute("data-color-scheme", colorScheme);
 
-    // Load extra settings
     const savedSettings = localStorage.getItem("userSettings");
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
@@ -70,14 +46,18 @@ export const ThemeProvider = ({ children }) => {
       root.setAttribute("data-compact-mode", "false");
     }
 
-    // Save to localStorage
-    localStorage.setItem("theme", theme);
+    localStorage.setItem("theme", "light");
     localStorage.setItem("colorScheme", colorScheme);
-  }, [theme, colorScheme]);
+  }, [colorScheme]);
+
+  const setThemeSafe = () => {
+    setTheme("light");
+    localStorage.setItem("theme", "light");
+  };
 
   const value = {
-    theme,
-    setTheme,
+    theme: "light",
+    setTheme: setThemeSafe,
     colorScheme,
     setColorScheme,
   };

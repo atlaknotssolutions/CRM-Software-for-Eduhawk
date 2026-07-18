@@ -373,14 +373,18 @@ export const AuthForm = () => {
             {mode === "forgot-code" && (
               <form onSubmit={handleCodeVerification} className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block text-center">
+                  <Label className="text-xs font-semibold text-gray-600 uppercase tracking-wider block text-center">
                     Verification Code
                   </Label>
+                  <p className="text-center text-sm text-gray-600">
+                    Enter the 6-digit code sent to your email.
+                  </p>
                   <div className="flex justify-center">
                     <InputOTP
                       value={otpCode}
                       onChange={setOtpCode}
                       maxLength={6}
+                      containerClassName="gap-2"
                     >
                       <InputOTPGroup>
                         <InputOTPSlot index={0} />

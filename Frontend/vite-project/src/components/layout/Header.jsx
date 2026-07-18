@@ -303,7 +303,6 @@
 //   );
 // };
 
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -344,7 +343,7 @@ export const Header = () => {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();   // ← Added for active link
+  const location = useLocation(); // ← Added for active link
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isAdmin = user?.role === "Admin";
@@ -362,7 +361,8 @@ export const Header = () => {
   };
 
   const API_BASE = import.meta.env.VITE_API_URL;
-  const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   const [deptName, setDeptName] = useState("");
 
   useEffect(() => {
@@ -391,22 +391,16 @@ export const Header = () => {
         }
       })();
     }
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [user, API_BASE, token]);
 
   const toggleTheme = () => {
-    if (theme === "light") setTheme("dark");
-    else if (theme === "dark") setTheme("system");
-    else setTheme("light");
+    setTheme("light");
   };
 
-  const getThemeIcon = () => {
-    switch (theme) {
-      case "light": return Sun;
-      case "dark": return Moon;
-      default: return Monitor;
-    }
-  };
+  const getThemeIcon = () => Sun;
   const ThemeIcon = getThemeIcon();
 
   const handleLogout = () => {
@@ -419,7 +413,11 @@ export const Header = () => {
         { label: "Dashboard", href: "/dashboard", icon: Building2 },
         { label: "Employees", href: "/employees", icon: Users },
         { label: "My Profile", href: "/profile", icon: User },
-        { label: "Assign Students", href: "/leadbulkassignment", icon: Calendar },
+        {
+          label: "Assign Students",
+          href: "/leadbulkassignment",
+          icon: Calendar,
+        },
         { label: "Add Student", href: "/addstudent", icon: UserCheck },
         { label: "Departments", href: "/department", icon: Building2 },
         { label: "Lead Management", href: "/lead-management", icon: List },
@@ -432,7 +430,11 @@ export const Header = () => {
           { label: "Dashboard", href: "/telecaller-analytics", icon: Target },
           { label: "My Profile", href: "/profile", icon: User },
           { label: "Add Student", href: "/addstudent", icon: UserCheck },
-          { label: "Telecaller Lead", href: "/tellcullerlead", icon: UserCheck },
+          {
+            label: "Telecaller Lead",
+            href: "/tellcullerlead",
+            icon: UserCheck,
+          },
           { label: "Employee Devices", href: "/my-devices", icon: Laptop },
           { label: "Goals", href: "/goals", icon: Target },
         ]
@@ -441,8 +443,16 @@ export const Header = () => {
             { label: "Dashboard", href: "/counsuller", icon: UserCheck },
             { label: "My Profile", href: "/profile", icon: User },
             { label: "Add Student", href: "/addstudent", icon: UserCheck },
-            { label: "Counselor Dashboard", href: "/counsuller", icon: UserCheck },
-            { label: "Counselor Lead", href: "/counsellorlead", icon: UserCheck },
+            {
+              label: "Counselor Dashboard",
+              href: "/counsuller",
+              icon: UserCheck,
+            },
+            {
+              label: "Counselor Lead",
+              href: "/counsellorlead",
+              icon: UserCheck,
+            },
             { label: "Employee Devices", href: "/my-devices", icon: Laptop },
             { label: "Goals", href: "/goals", icon: Target },
           ]
@@ -488,7 +498,10 @@ export const Header = () => {
                   <Avatar className="w-8 h-8">
                     <AvatarImage src={user?.avatar} alt={user?.name} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {user?.name?.split(" ").map((n) => n[0]).join("")}
+                      {user?.name
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("")}
                     </AvatarFallback>
                   </Avatar>
                   <div className="hidden md:block text-left">
@@ -507,7 +520,10 @@ export const Header = () => {
                 <div className="px-2 py-1.5">
                   <p className="text-sm font-medium">{user?.name}</p>
                   <p className="text-xs text-muted-foreground">{user?.email}</p>
-                  <Badge variant={isAdmin ? "default" : "secondary"} className="text-xs mt-1">
+                  <Badge
+                    variant={isAdmin ? "default" : "secondary"}
+                    className="text-xs mt-1"
+                  >
                     {deptName || getDepartmentName(user?.department)}
                   </Badge>
                 </div>
@@ -525,7 +541,10 @@ export const Header = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-destructive"
+                >
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out
                 </DropdownMenuItem>
@@ -539,7 +558,11 @@ export const Header = () => {
               className="md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </Button>
           </div>
         </div>
